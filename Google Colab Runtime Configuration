@@ -1,0 +1,26 @@
+ Google Colab Runtime Configuration:
+GPU:
+
+NVIDIA Tesla T4, P100, or V100 (available via Runtime > Change runtime type > GPU)
+
+16GB GPU memory (approx. for T4/P100)
+
+CPU:
+
+2-core to 4-core Xeon CPUs (shared environment)
+
+RAM:
+
+~12GB (standard) to ~26GB (Colab Pro)
+
+Disk Space:
+
+~50GB of temporary storage
+
+Recommended Runtime Settings:
+Use GPU as the hardware accelerator.
+
+Recommended for training with moderate-sized datasets (e.g., <10,000 images at 512x512 resolution).
+
+For large datasets or prolonged training, use Google Colab Pro or Colab Pro+ for extended session times and higher memory limits.
+
