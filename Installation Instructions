@@ -1,0 +1,60 @@
+1. Clone the Repository
+
+git clone https://github.com/your-username/gradient-transformer-unet.git
+cd gradient-transformer-unet
+
+2. Set Up the Environment
+Option A: Using Conda (Recommended)
+conda create -n cracknet python=3.9 -y
+conda activate cracknet
+pip install -r requirements.txt
+
+Option B: Using venv + pip
+python -m venv cracknet-env
+source cracknet-env/bin/activate   # or `.\cracknet-env\Scripts\activate` on Windows
+pip install -r requirements.txt
+
+3. Install Required Packages
+Here is a sample requirements.txt:
+
+torch>=1.10
+torchvision>=0.11
+numpy
+matplotlib
+opencv-python
+scikit-learn
+scikit-image
+tqdm
+albumentations
+transformers
+For GPU support, make sure to install the appropriate PyTorch version with CUDA:
+
+# Example: for CUDA 11.7
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
+
+4. Download or Prepare Dataset
+Place your dataset inside a folder named data/ or as instructed in the README.
+
+Expected structure:
+
+kotlin
+
+data/
+  └── images/
+  └── masks/
+
+5. Run the Model
+For training:
+
+
+python train.py --config configs/train_config.yaml
+For inference:
+
+python inference.py --weights path/to/best_model.pth --input path/to/image.jpg
+
+6. (Optional) Run on Google Colab
+Open the included notebook: colab_notebook.ipynb
+
+Mount your Google Drive, upload data and models as needed.
+
+Follow the cells to install dependencies and run the model.
