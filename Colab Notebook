@@ -1,0 +1,2982 @@
+# -*- coding: utf-8 -*-
+"""CrackFilter.ipynb
+
+
+Original file is located at
+    https://colab.research.google.com/drive/1-4esvlyRAGMA9pE-pjnwdVFn1kkF1iZv
+"""
+
+from google.colab import drive
+drive.mount("/content/drive")
+
+pip install pydicom
+
+pip install kornia
+
+import tensorflow as tf
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization, GlobalAveragePooling2D
+from tensorflow.keras.applications import ResNet50, InceptionV3
+from tensorflow.keras.applications.resnet50 import preprocess_input
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from tensorflow.keras.utils import to_categorical
+from sklearn.utils import class_weight
+from keras.optimizers import Adam
+from sklearn.metrics import classification_report, confusion_matrix, precision_score, recall_score, f1_score
+import numpy as np
+from PIL import Image
+from keras.preprocessing.image import img_to_array, load_img
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.ndimage import sobel
+from skimage.filters import scharr
+
+import numpy as np
+from skimage.io import imread
+from skimage import measure
+from skimage import color
+from skimage import data, img_as_float
+import matplotlib.pyplot as plt
+from skimage import morphology
+from skimage import util
+from skimage import filters
+from scipy import ndimage
+from skimage import feature
+from skimage import transform
+from skimage import draw
+import pandas as pd
+from PIL import Image
+import cv2 as cv
+
+import matplotlib.pyplot as plt
+from skimage import data, img_as_float
+from skimage.segmentation import chan_vese
+img_obj = Image.open('/content/drive/My Drive/Crack/img/00004.jpg')
+image = img_as_float(img_obj.convert('L'))
+# Feel free to play around with the parameters to see how they impact the result
+cv = chan_vese(
+    image,
+    mu=0.25,
+    lambda1=1,
+    lambda2=1,
+    tol=1e-3,
+    max_num_iter=200,
+    dt=0.5,
+    init_level_set="checkerboard",
+    extended_output=True,
+)
+
+fig, axes = plt.subplots(2, 2, figsize=(8, 8))
+ax = axes.flatten()
+
+ax[0].imshow(image, cmap="gray")
+ax[0].set_axis_off()
+ax[0].set_title("Original Image", fontsize=12)
+
+ax[1].imshow(cv[0], cmap="gray")
+ax[1].set_axis_off()
+title = f'Chan-Vese segmentation - {len(cv[2])} iterations'
+ax[1].set_title(title, fontsize=12)
+
+import pandas as pd
+import os
+import matplotlib.pyplot as plt
+
+from PIL import Image
+from pathlib import Path
+from fastai.vision.all import *
+from fastai.vision import models
+from fastai.metrics import accuracy, F1Score
+from fastai.medical.imaging import get_dicom_files
+from fastai.medical.imaging import *
+from fastai.medical.imaging import TensorCTScan
+from sklearn.metrics import classification_report
+
+
+import warnings
+warnings.filterwarnings("ignore")
+
+import matplotlib.pyplot as plt
+
+PATH = '/content/drive/My Drive/Crack/Overall'
+
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
+from matplotlib import pyplot as plt
+from IPython.display import clear_output
+import tensorflow_hub as hub
+
+train_data_dir = '/content/drive/My Drive/Crack/Overall'
+BATCH_SIZE = 32
+IMG_SIZE = (224, 224)
+EPOCHS = 25
+SHUFFLE_BUFFER = 1000
+PRETRAINED_MODEL_PATH = "https://www.kaggle.com/models/google/resnet-v2/frameworks/TensorFlow2/variations/50-classification/versions/2"
+validation_split = 0.2
+
+train_dataset = tf.keras.utils.image_dataset_from_directory(
+    train_data_dir,
+    image_size=IMG_SIZE,
+    batch_size=BATCH_SIZE,
+    color_mode='rgb',
+    labels='inferred',
+    label_mode='categorical',
+    shuffle=True,
+    seed=42,
+    validation_split=validation_split,
+    subset='training',
+)
+
+validation_dataset = tf.keras.utils.image_dataset_from_directory(
+    train_data_dir,
+    image_size=IMG_SIZE,
+    batch_size=BATCH_SIZE,
+    color_mode='rgb',
+    labels='inferred',
+    label_mode='categorical',
+    shuffle=True,
+    seed=42,
+    validation_split=validation_split,
+    subset='validation',
+)
+
+class_names = train_dataset.class_names
+
+
+plt.figure(figsize=(10, 10))
+for images, labels in train_dataset.take(1):
+    for i in range(25):
+        image = images[i].numpy()
+        label = labels[i]
+        class_name = class_names[tf.argmax(label)]
+        plt.subplot(5, 5, i + 1)
+        plt.imshow(image.astype("uint8"))
+        plt.title(class_name)
+        plt.axis("off")
+plt.show()
+
+class_names = train_dataset.class_names
+
+
+plt.figure(figsize=(10, 10))
+for images, labels in train_dataset.take(1):
+    for i in range(25):
+        image = images[i].numpy()
+        label = labels[i]
+        class_name = class_names[tf.argmax(label)]
+        plt.subplot(5, 5, i + 1)
+        plt.imshow(image.astype("uint8"))
+        plt.title(class_name)
+        plt.axis("off")
+plt.show()
+
+class_names = train_dataset.class_names
+
+
+plt.figure(figsize=(10, 10))
+for images, labels in train_dataset.take(1):
+    for i in range(25):
+        image = images[i].numpy()
+        label = labels[i]
+        class_name = class_names[tf.argmax(label)]
+        plt.subplot(5, 5, i + 1)
+        plt.imshow(image.astype("uint8"))
+        plt.title(class_name)
+        plt.axis("off")
+plt.show()
+
+plt.figure(figsize=(10, 10))
+
+plt.figure(figsize=(10, 10))
+for images, labels in train_dataset.take(1):
+    for i in range(25):
+        image = images[i].numpy()
+        label = labels[i]
+        class_name = class_names[tf.argmax(label)]
+        plt.subplot(5,5, i + 1)
+        plt.imshow(image.astype("uint8"))
+
+        plt.axis("off")
+plt.show()
+
+plt.figure(figsize=(10, 10))
+
+plt.figure(figsize=(10, 10))
+for images, labels in train_dataset.take(1):
+    for i in range(25):
+        image = images[i].numpy()
+        label = labels[i]
+        class_name = class_names[tf.argmax(label)]
+        plt.subplot(5,5, i + 1)
+        plt.imshow(image.astype("uint8"),cmap='gray')
+
+        plt.axis("off")
+plt.show()
+
+class_names = train_dataset.class_names
+
+
+plt.figure(figsize=(10, 10))
+for images, labels in train_dataset.take(1):
+    for i in range(25):
+        image = images[i].numpy()
+        gray_img = np.dot(image[...,:3], [0.2989, 0.5870, 0.1140])
+        label = labels[i]
+        class_name = class_names[tf.argmax(label)]
+        plt.subplot(5, 5, i + 1)
+        plt.imshow(gray_img.astype("uint8"),cmap='gray')
+        plt.title(class_name)
+        plt.axis("off")
+plt.show()
+
+class_names = train_dataset.class_names
+
+
+plt.figure(figsize=(10, 10))
+for images, labels in train_dataset.take(1):
+    for i in range(25):
+        image = images[i].numpy()
+        gray_img = np.dot(image[...,:3], [0.2989, 0.5870, 0.1140])
+        label = labels[i]
+        class_name = class_names[tf.argmax(label)]
+        plt.subplot(5, 5, i + 1)
+        plt.imshow(gray_img.astype("uint8"),cmap='gray')
+        plt.title(class_name)
+        plt.axis("off")
+plt.show()
+
+class_names = train_dataset.class_names
+
+
+plt.figure(figsize=(10, 10))
+for images, labels in train_dataset.take(1):
+    for i in range(25):
+        image = images[i].numpy()
+        gray_img = np.dot(image[...,:3], [0.2989, 0.5870, 0.1140])
+        label = labels[i]
+        class_name = class_names[tf.argmax(label)]
+        plt.subplot(5, 5, i + 1)
+        plt.imshow(gray_img.astype("uint8"),cmap='gray')
+        plt.title(class_name)
+        plt.axis("off")
+plt.show()
+
+plt.figure(figsize=(10, 10))
+
+plt.figure(figsize=(10, 10))
+for images, labels in train_dataset.take(1):
+    for i in range(25):
+        image = images[i].numpy()
+        gray_img = np.dot(image[...,:3], [0.2989, 0.5870, 0.1140])
+        label = labels[i]
+        class_name = class_names[tf.argmax(label)]
+        plt.subplot(5,5, i + 1)
+        plt.imshow(gray_img.astype("uint8"),cmap='gray')
+
+        plt.axis("off")
+plt.show()
+
+data_dir = '/content/drive/My Drive/Crack/Overall/'
+datagen = ImageDataGenerator(validation_split=0.2, rescale=1./255)
+train_generator = datagen.flow_from_directory(data_dir, target_size=(128, 128), batch_size=32, class_mode='categorical', subset='training')
+val_generator = datagen.flow_from_directory(data_dir, target_size=(128, 128), batch_size=32, class_mode='categorical', subset='validation')
+
+images, labels = next(train_generator)
+
+def apply_gs(images_arr):
+    sobel_images = []
+    for img in images_arr:
+        gray_img = np.dot(img[...,:3], [0.2989, 0.5870, 0.1140])
+        sobel_images.append(gray_img)
+    return np.array(sobel_images)
+
+sobel_images = apply_gs(images)
+
+def plot_sobel_images(original_images, sobel_images, labels_arr):
+    fig, axes = plt.subplots(5,5, figsize=(20, 10))
+    axes = axes.flatten()
+    for orig_img, sob_img, lbl, ax in zip(original_images, sobel_images, labels_arr, axes):
+        ax.imshow(sob_img, cmap='gray')
+        ax.axis('off')
+
+    plt.tight_layout()
+    plt.show()
+
+plot_sobel_images(images, sobel_images, labels)
+
+images = '/content/drive/My Drive/Crack/Pavementcrack/mask/'
+
+!pip install opencv-python
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Assuming 'images' is the path to the directory containing images
+image_dir = '/content/drive/My Drive/Crack/mask/'
+
+# Get a list of image file paths
+import os
+image_files = [os.path.join(image_dir, f) for f in os.listdir(image_dir) if os.path.isfile(os.path.join(image_dir, f))]
+
+def plot_otsu_images(image_files):
+    fig, axes = plt.subplots(5, 5, figsize=(10, 10))
+    axes = axes.flatten()
+
+    # Load and display the first 25 images
+    for i, file_path in enumerate(image_files[:25]):
+        # Load the image using OpenCV
+        img = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
+
+        axes[i].imshow(img, cmap='gray')
+        axes[i].axis('off')
+
+    plt.tight_layout()
+    plt.show()
+
+
+plot_otsu_images(image_files)
+
+!pip install opencv-python
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Assuming 'images' is the path to the directory containing images
+image_dir = '/content/drive/My Drive/Crack/mask/'
+
+# Get a list of image file paths
+import os
+image_files = [os.path.join(image_dir, f) for f in os.listdir(image_dir) if os.path.isfile(os.path.join(image_dir, f))]
+
+def plot_otsu_images(image_files):
+    fig, axes = plt.subplots(5, 5, figsize=(10, 10))
+    axes = axes.flatten()
+
+    # Load and display the first 25 images
+    for i, file_path in enumerate(image_files[:25]):
+        # Load the image using OpenCV
+        img = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
+
+        axes[i].imshow(img)
+        axes[i].axis('off')
+
+    plt.tight_layout()
+    plt.show()
+
+
+plot_otsu_images(image_files)
+
+!pip install opencv-python
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Assuming 'images' is the path to the directory containing images
+image_dir = '/content/drive/My Drive/Crack/Bridgewallcrack/mask/'
+
+# Get a list of image file paths
+import os
+image_files = [os.path.join(image_dir, f) for f in os.listdir(image_dir) if os.path.isfile(os.path.join(image_dir, f))]
+
+def plot_otsu_images(image_files):
+    fig, axes = plt.subplots(5, 5, figsize=(10, 10))
+    axes = axes.flatten()
+
+    # Load and display the first 25 images
+    for i, file_path in enumerate(image_files[:25]):
+        # Load the image using OpenCV
+        img = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
+
+        axes[i].imshow(img, cmap='gray')
+        axes[i].axis('off')
+
+    plt.tight_layout()
+    plt.show()
+
+
+plot_otsu_images(image_files)
+
+!pip install opencv-python
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Assuming 'images' is the path to the directory containing images
+image_dir = '/content/drive/My Drive/Crack/Bridgewallcrack/mask/'
+
+# Get a list of image file paths
+import os
+image_files = [os.path.join(image_dir, f) for f in os.listdir(image_dir) if os.path.isfile(os.path.join(image_dir, f))]
+
+def plot_otsu_images(image_files):
+    fig, axes = plt.subplots(5, 5, figsize=(10, 10))
+    axes = axes.flatten()
+
+    # Load and display the first 25 images
+    for i, file_path in enumerate(image_files[:25]):
+        # Load the image using OpenCV
+        img = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
+
+        axes[i].imshow(img)
+        axes[i].axis('off')
+
+    plt.tight_layout()
+    plt.show()
+
+
+plot_otsu_images(image_files)
+
+!pip install opencv-python
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Assuming 'images' is the path to the directory containing images
+image_dir = '/content/drive/My Drive/Crack/Pavementcrack/crack/mask/'
+
+# Get a list of image file paths
+import os
+image_files = [os.path.join(image_dir, f) for f in os.listdir(image_dir) if os.path.isfile(os.path.join(image_dir, f))]
+
+def plot_otsu_images(image_files):
+    fig, axes = plt.subplots(5, 5, figsize=(10, 10))
+    axes = axes.flatten()
+
+    # Load and display the first 25 images
+    for i, file_path in enumerate(image_files[:25]):
+        # Load the image using OpenCV
+        img = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
+
+        axes[i].imshow(img, cmap='gray')
+        axes[i].axis('off')
+
+    plt.tight_layout()
+    plt.show()
+
+
+plot_otsu_images(image_files)
+
+!pip install opencv-python
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Assuming 'images' is the path to the directory containing images
+image_dir = '/content/drive/My Drive/Crack/Pavementcrack/mask/'
+
+# Get a list of image file paths
+import os
+image_files = [os.path.join(image_dir, f) for f in os.listdir(image_dir) if os.path.isfile(os.path.join(image_dir, f))]
+
+def plot_otsu_images(image_files):
+    fig, axes = plt.subplots(5, 5, figsize=(10, 10))
+    axes = axes.flatten()
+
+    # Load and display the first 25 images
+    for i, file_path in enumerate(image_files[:25]):
+        # Load the image using OpenCV
+        img = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
+
+        axes[i].imshow(img)
+        axes[i].axis('off')
+
+    plt.tight_layout()
+    plt.show()
+
+
+plot_otsu_images(image_files)
+
+def plot_otsu_images(original_images, sobel_images, labels_arr):
+    fig, axes = plt.subplots(5,5, figsize=(10, 10))
+    axes = axes.flatten()
+    for orig_img, sob_img, lbl, ax in zip(original_images, sobel_images, labels_arr, axes):
+        ax.imshow(sob_img, cmap='gray')
+        ax.axis('off')
+        ax.set_title(np.argmax(lbl))
+    plt.tight_layout()
+    plt.show()
+
+plot_otsu_images(images, sobel_images, labels)
+
+import cv2
+
+data_dir = '/content/drive/My Drive/Crack/Overall/Crack1/'
+datagen = ImageDataGenerator(validation_split=0.2, rescale=1./255)
+train_generator = datagen.flow_from_directory(data_dir, target_size=(128, 128), batch_size=32, class_mode='categorical', subset='training')
+val_generator = datagen.flow_from_directory(data_dir, target_size=(128, 128), batch_size=32, class_mode='categorical', subset='validation')
+
+images, labels = next(train_generator)
+
+def apply_sobel(images_arr):
+    sobel_images = []
+    for img in images_arr:
+        gray_img = np.dot(img[...,:3], [0.2989, 0.5870, 0.1140])
+        sobel_x = sobel(gray_img, axis=0, mode='constant')
+        sobel_y = sobel(gray_img, axis=1, mode='constant')
+        sobel_img = np.hypot(sobel_x, sobel_y)
+        sobel_images.append(sobel_img)
+    return np.array(sobel_images)
+
+sobel_images = apply_sobel(images)
+
+#sobel filtered image
+
+def plot_sobel_images(original_images, sobel_images, labels_arr):
+    fig, axes = plt.subplots(5,5, figsize=(10, 10))
+    axes = axes.flatten()
+    for orig_img, sob_img, lbl, ax in zip(original_images, sobel_images, labels_arr, axes):
+        ax.imshow(sob_img,cmap='magma_r')
+        ax.axis('off')
+        ax.set_title(np.argmax(lbl))
+    plt.tight_layout()
+    plt.show()
+
+plot_sobel_images(images, sobel_images, labels)
+
+from skimage.filters import threshold_otsu
+def apply_otsu(images_arr):
+    sobel_images = []
+    for img in images_arr:
+        gray_img = np.dot(img[...,:3], [0.2989, 0.5870, 0.1140])
+        thresh_val = threshold_otsu(gray_img)
+        mask=np.where(gray_img>thresh_val,1,0)
+        sobel_img = mask.copy()
+        sobel_images.append(sobel_img)
+    return np.array(sobel_images)
+
+sobel_images = apply_otsu(images)
+
+#Otsu threshold filtered image
+
+def plot_otsu_images(original_images, sobel_images, labels_arr):
+    fig, axes = plt.subplots(5,5, figsize=(10, 10))
+    axes = axes.flatten()
+    for orig_img, sob_img, lbl, ax in zip(original_images, sobel_images, labels_arr, axes):
+        ax.imshow(sob_img, cmap='gray')
+        ax.axis('off')
+        ax.set_title(np.argmax(lbl))
+    plt.tight_layout()
+    plt.show()
+
+plot_otsu_images(images, sobel_images, labels)
+
+def plot_otsu_images(original_images, sobel_images, labels_arr):
+    fig, axes = plt.subplots(5,5, figsize=(10, 10))
+    axes = axes.flatten()
+    for orig_img, sob_img, lbl, ax in zip(original_images, sobel_images, labels_arr, axes):
+        ax.imshow(sob_img, cmap='BuPu_r')
+        ax.axis('off')
+        ax.set_title(np.argmax(lbl))
+    plt.tight_layout()
+    plt.show()
+
+plot_otsu_images(images, sobel_images, labels)
+
+def plot_otsu_images(original_images, sobel_images, labels_arr):
+    fig, axes = plt.subplots(5,5, figsize=(10, 10))
+    axes = axes.flatten()
+    for orig_img, sob_img, lbl, ax in zip(original_images, sobel_images, labels_arr, axes):
+        ax.imshow(sob_img)
+        ax.axis('off')
+        ax.set_title(np.argmax(lbl))
+    plt.tight_layout()
+    plt.show()
+
+plot_otsu_images(images, sobel_images, labels)
+
+def plot_otsu_images(original_images, sobel_images, labels_arr):
+    fig, axes = plt.subplots(5,5, figsize=(10, 10))
+    axes = axes.flatten()
+    for orig_img, sob_img, lbl, ax in zip(original_images, sobel_images, labels_arr, axes):
+        ax.imshow(sob_img)
+        ax.axis('off')
+        ax.set_title(np.argmax(lbl))
+    plt.tight_layout()
+    plt.show()
+
+plot_otsu_images(images, sobel_images, labels)
+
+def apply_otsu(images_arr):
+    sobel_images = []
+    for img in images_arr:
+        gray_img = color.rgb2gray(img)
+        detected = feature.canny(gray_img,sigma=0.7)
+
+
+        sobel_images.append(detected)
+    return np.array(sobel_images)
+
+sobel_images = apply_otsu(images)
+
+def plot_otsu_images(original_images, sobel_images, labels_arr):
+    fig, axes = plt.subplots(5,5, figsize=(10, 10))
+    axes = axes.flatten()
+    for orig_img, sob_img, lbl, ax in zip(original_images, sobel_images, labels_arr, axes):
+        ax.imshow(sob_img, cmap='gray')
+        ax.axis('off')
+        ax.set_title(np.argmax(lbl))
+    plt.tight_layout()
+    plt.show()
+
+plot_otsu_images(images, sobel_images, labels)
+
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy import ndimage as ndi
+from skimage import color, data, filters, graph, measure, morphology
+
+def apply_otsu(images_arr):
+    sobel_images2 = []
+    for img in images_arr:
+        retina = color.rgb2gray(img)
+        # When classes=2 is specified in threshold_multiotsu, it only returns one threshold value.
+        # So, we modify the code to accept a single threshold value.
+        t0 = filters.threshold_multiotsu(retina, classes=2, nbins=256)
+        mask = retina > t0
+        vessels = filters.sato(retina, sigmas=range(1, 10)) * mask
+
+        sobel_images2.append(vessels)
+    return np.array(sobel_images2)
+
+sobel_images1 = apply_otsu(images)
+
+def plot_otsu_images(original_images, sobel_images, labels_arr):
+    fig, axes = plt.subplots(5,5, figsize=(10, 10))
+    axes = axes.flatten()
+    for orig_img, sob_img, lbl, ax in zip(original_images, sobel_images, labels_arr, axes):
+        ax.imshow(sob_img, cmap='gist_ncar_r')
+        ax.axis('off')
+        ax.set_title(np.argmax(lbl))
+    plt.tight_layout()
+    plt.show()
+
+plot_otsu_images(images, sobel_images1, labels)
+
+import matplotlib.pyplot as plt
+from skimage import data, img_as_float
+from skimage.segmentation import chan_vese
+img_obj = Image.open('/content/drive/My Drive/Crack/img/00004.jpg')
+image = img_as_float(img_obj.convert('L'))
+# Feel free to play around with the parameters to see how they impact the result
+cv = chan_vese(
+    image,
+    mu=0.25,
+    lambda1=1,
+    lambda2=1,
+    tol=1e-3,
+    max_num_iter=200,
+    dt=0.5,
+    init_level_set="checkerboard",
+    extended_output=True,
+)
+
+fig, axes = plt.subplots(2, 2, figsize=(8, 8))
+ax = axes.flatten()
+
+ax[0].imshow(image, cmap="gray")
+ax[0].set_axis_off()
+ax[0].set_title("Original Image", fontsize=12)
+
+ax[1].imshow(cv[0], cmap="gray")
+ax[1].set_axis_off()
+title = f'Chan-Vese segmentation - {len(cv[2])} iterations'
+ax[1].set_title(title, fontsize=12)
+
+image_paths=['/content/drive/My Drive/Crack/Overall/Crack1/Deck Crack/00345.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Deck Crack/00353.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Deck Crack/00354.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Deck Crack/00355.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Deck Crack/00358.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Deck Crack/00359.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Deck Crack/00404.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Deck Crack/00431.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Deck Crack/00436.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Deck Crack/00409.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Deck Crack/00437.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Deck Crack/00444.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Pave Crack/00004.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Pave Crack/00005.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Pave Crack/00006.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Pave Crack/00007.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Pave Crack/00008.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Pave Crack/00009.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Pave Crack/00010.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Pave Crack/00011.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Pave Crack/00012.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Pave Crack/00013.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Pave Crack/00014.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Wall Crack/00002.jpg',
+'/content/drive/My Drive/Crack/Overall/Crack1/Pave Crack/00003.jpg'
+             ]
+
+import numpy as np
+import cv2 as cv
+from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
+from skimage import data, img_as_float
+from skimage.segmentation import chan_vese
+
+def apply_otsu(image_paths):
+    sobel_images = []
+    for img_path in image_paths: # Iterate over image paths
+        #img = cv2.imread(img_path) # Read the image data from the file path
+        img_obj = Image.open(img_path)
+        image = img_as_float(img_obj.convert('L'))
+        # Feel free to play around with the parameters to see how they impact the result
+        cv = chan_vese(
+            image,
+            mu=0.25,
+            lambda1=1,
+            lambda2=1,
+            tol=1e-3,
+            max_num_iter=200,
+            dt=0.5,
+            init_level_set="checkerboard",
+            extended_output=True,
+        )
+        img=cv[0]
+        if img is None:
+            print(f"Failed to read image at: {img_path}")
+            continue # Skip to the next image if reading fails
+
+        # Convert the boolean image to uint8 before resizing
+        img = img.astype(np.uint8) * 255
+
+        # Resize the image to a consistent size
+        img = cv2.resize(img, (224, 224)) # Choose your desired size
+
+        sobel_img =  img.copy()
+        sobel_images.append(sobel_img)
+    return np.array(sobel_images)
+
+sobel_images = apply_otsu(image_paths)
+
+def plot_otsu_images(original_images, sobel_images, labels_arr):
+    fig, axes = plt.subplots(5,5, figsize=(10, 10))
+    axes = axes.flatten()
+    for orig_img, sob_img, lbl, ax in zip(original_images, sobel_images, labels_arr, axes):
+        ax.imshow(sob_img, cmap='gray')
+        ax.axis('off')
+        ax.set_title(np.argmax(lbl))
+    plt.tight_layout()
+    plt.show()
+
+plot_otsu_images(images, sobel_images, labels)
+
+
+
+import matplotlib.pyplot as plt
+from skimage import data, img_as_float
+from skimage.segmentation import chan_vese
+from skimage import color
+
+def apply_otsu(images_arr):
+    sobel_images = []
+    for img in images_arr:
+        # Convert the image to grayscale using skimage.color.rgb2gray
+        gray_img = color.rgb2gray(img)
+
+        # Convert the grayscale image to float using skimage.img_as_float
+        image = img_as_float(gray_img)
+        # Removed the attempt to use Image.open as 'img' is already a NumPy array
+        # img_obj = Image.open(img)
+        # image = img_as_float(img_obj.convert('L'))
+
+        # Feel free to play around with the parameters to see how they impact the result
+        cv = chan_vese(
+            image,
+            mu=0.25,
+            lambda1=1,
+            lambda2=1,
+            tol=1e-3,
+            max_num_iter=200,
+            dt=0.5,
+            init_level_set="checkerboard",
+            extended_output=True,
+        )
+
+        sobel_images.append(cv[0])
+    return np.array(sobel_images)
+
+sobel_images = apply_otsu(images)
+
+def plot_otsu_images(original_images, sobel_images, labels_arr):
+    fig, axes = plt.subplots(5,5, figsize=(10, 10))
+    axes = axes.flatten()
+    for orig_img, sob_img, lbl, ax in zip(original_images, sobel_images, labels_arr, axes):
+        ax.imshow(sob_img, cmap='gray')
+        ax.axis('off')
+        ax.set_title(np.argmax(lbl))
+    plt.tight_layout()
+    plt.show()
+
+plot_otsu_images(images, sobel_images, labels)
+
+
+
+fig, axes = plt.subplots(5,5, figsize=(10, 10))
+axes = axes.flatten()
+for img_path, ax in zip(images,axes):
+  img = img_path
+  gray_img = color.rgb2gray(img)
+
+  contours = measure.find_contours(gray_img,level=0.7)
+
+  #f,ax = plt.subplots(1,2,figsize=(15,5),sharex=True,sharey=True)
+  #ax = ax.ravel()
+  ax.imshow(gray_img,cmap='gray')
+  ax.axis('off')
+  for n,contour in enumerate(contours):
+      ax.plot(contour[:,1],contour[:,0],lw=5)
+plt.tight_layout()
+
+plt.show()
+
+def apply_otsu(images_arr):
+    sobel_images = []
+    # classes_df = train_df[train_df['Label'] ==  class_name].reset_index(drop = True) # Not used in this function
+    for img in images_arr:
+
+        gray=cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        corners_gray = cv2.goodFeaturesToTrack(gray, maxCorners=50, qualityLevel=0.02, minDistance=20)
+        corners_gray = np.float32(corners_gray)
+        # Use img instead of image here since image is not defined within this function
+        for item in corners_gray:
+            x, y = item[0]
+            cv2.circle(img, (int(x), int(y)), 6, (0, 255, 0), -1)
+        sobel_img =  img.copy() # Use img here as well
+        sobel_images.append(sobel_img)
+    return np.array(sobel_images)
+
+sobel_images = apply_otsu(images)
+
+def plot_otsu_images(original_images, sobel_images, labels_arr):
+    fig, axes = plt.subplots(5,5, figsize=(10, 10))
+    axes = axes.flatten()
+    for orig_img, sob_img, lbl, ax in zip(original_images, sobel_images, labels_arr, axes):
+        ax.imshow(sob_img, cmap='gray')
+        ax.axis('off')
+        ax.set_title(np.argmax(lbl))
+    plt.tight_layout()
+    plt.show()
+
+plot_otsu_images(images, sobel_images, labels)
+
+
+
+
+
+import numpy as np
+import cv2
+
+def apply_gs(images_arr):
+    sobel_images = []
+    # Convert the EagerTensor to a NumPy array
+    images_arr = images_arr.numpy() # Change here to convert to numpy array
+    for img in images_arr:
+        gray_img = np.dot(img[...,:3], [0.2989, 0.5870, 0.1140])
+        kernel = np.array([[0, -3, -3],
+                       [3,  0, -3],
+                       [3,  3,  0]])
+
+        # img_emboss = cv2.filter2D(img.astype(np.uint8), -1, kernel=kernel) # Change was done here to convert to numpy array
+
+        img_emboss = cv2.filter2D(img.astype(np.float32), -1, kernel=kernel) # Change was done here to convert to numpy array
+
+        # Convert image to image gray
+        tmp = cv2.cvtColor(img_emboss, cv2.COLOR_BGR2GRAY)
+
+        # Applying thresholding technique
+        _, alpha = cv2.threshold(tmp, 0, 255, cv2.THRESH_BINARY)
+
+        # Using cv2.split() to split channels
+        # of coloured image
+        b, g, r = cv2.split(img_emboss)
+
+        # Making list of Red, Green, Blue
+        # Channels and alpha
+        rgba = [b, g, r, alpha]
+
+        # Using cv2.merge() to merge rgba
+        # into a coloured/multi-channeled image
+        dst = cv2.merge(rgba, 4)
+        sobel_images.append(dst)
+    return np.array(sobel_images)
+
+sobel_images = apply_gs(images)
+
+def plot_sobel_images(original_images, sobel_images):
+    fig, axes = plt.subplots(4,5, figsize=(20, 10))
+    axes = axes.flatten()
+    for orig_img, sob_img, ax in zip(original_images, sobel_images, axes):
+
+        ax.imshow(sob_img, cmap='gray')
+        ax.axis('off')
+
+    plt.tight_layout()
+    plt.show()
+
+plot_sobel_images(images, sobel_images)
+
+import numpy as np
+import cv2
+
+def apply_gs(images_arr):
+    sobel_images = []
+    # Convert the EagerTensor to a NumPy array before iterating
+    images_arr = images_arr.numpy()
+    for img in images_arr:
+        gray_img = np.dot(img[...,:3], [0.2989, 0.5870, 0.1140])
+        kernel = np.array([[0, -3, -3],
+                       [3,  0, -3],
+                       [3,  3,  0]])
+
+        # Apply filter2D on the NumPy array
+        img_emboss = cv2.filter2D(img, -1, kernel=kernel)
+        sobel_images.append(img_emboss)
+    return np.array(sobel_images)
+
+sobel_images = apply_gs(images)
+
+def plot_sobel_images(original_images, sobel_images):
+    fig, axes = plt.subplots(4,5, figsize=(20, 10))
+    axes = axes.flatten()
+    for orig_img, sob_img, ax in zip(original_images, sobel_images, axes):
+
+        ax.imshow(sob_img, cmap='gray')
+        ax.axis('off')
+
+    plt.tight_layout()
+    plt.show()
+
+plot_sobel_images(images, sobel_images)
+
+data_augmentation = tf.keras.Sequential([
+    layers.RandomFlip('horizontal'),
+    layers.RandomRotation(0.2),
+    layers.RandomZoom(0.2),
+    layers.Rescaling(1/255.)
+])
+normalization = layers.Rescaling(1/255.)
+
+training_data = (train_dataset.map(lambda x,y: (data_augmentation(x), y))
+                 .shuffle(SHUFFLE_BUFFER).prefetch(1).cache())
+validation_data = (validation_dataset.map(lambda x,y: (normalization(x), y))
+                   .prefetch(1).cache())
+
+demo_datagen = ImageDataGenerator(
+    rotation_range=15,
+    width_shift_range=0.05,
+    height_shift_range=0.05,
+    rescale=1./255,
+    shear_range=0.05,
+    brightness_range=[0.1, 1.5],
+    horizontal_flip=True,
+    vertical_flip=True
+)
+
+import os
+from tensorflow.keras.preprocessing.image import load_img, img_to_array
+
+os.mkdir('preview9')
+img_path = '/content/drive/My Drive/Crack/Overall/Pave Crack/00010.jpg' # Path to the image
+img = load_img(img_path, target_size=(224, 224)) # Load the image
+x = img_to_array(img) # Convert the image to a NumPy array
+x = x.reshape((1,) + x.shape) # Reshape the array for the data generator
+
+i = 0
+for batch in demo_datagen.flow(x, batch_size=1, save_to_dir='preview9', save_prefix='aug_img', save_format='jpg'):
+    i += 1
+    if i > 20:
+        break
+
+import matplotlib.pyplot as plt
+import cv2
+import os
+
+# Display the original image from the cropped train set
+plt.imshow(img)
+plt.xticks([])
+plt.yticks([])
+
+plt.show()
+
+# Display augmented images from the 'preview/' directory
+plt.figure(figsize=(20, 10))
+i = 1
+for img_file in os.listdir('preview9/'):
+    img = cv2.imread('preview9/' + img_file)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    plt.subplot(3, 7, i)
+    plt.imshow(img)
+    plt.xticks([])
+    plt.yticks([])
+    i += 1
+    if i > 3 * 7:
+        break
+plt.suptitle('Augmented Images')
+plt.show()
+
+import os
+from tensorflow.keras.preprocessing.image import load_img, img_to_array
+
+os.mkdir('preview29')
+img_path = '/content/drive/My Drive/Crack/Overall/Wall Crack/00002.jpg' # Path to the image
+img = load_img(img_path, target_size=(224, 224)) # Load the image
+x = img_to_array(img) # Convert the image to a NumPy array
+x = x.reshape((1,) + x.shape) # Reshape the array for the data generator
+
+i = 0
+for batch in demo_datagen.flow(x, batch_size=1, save_to_dir='preview29', save_prefix='aug_img', save_format='jpg'):
+    i += 1
+    if i > 20:
+        break
+
+import matplotlib.pyplot as plt
+import cv2
+import os
+
+# Display the original image from the cropped train set
+plt.imshow(img)
+plt.xticks([])
+plt.yticks([])
+
+plt.show()
+
+# Display augmented images from the 'preview/' directory
+plt.figure(figsize=(20, 10))
+i = 1
+for img_file in os.listdir('preview29/'):
+    img = cv2.imread('preview29/' + img_file)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    plt.subplot(3, 7, i)
+    plt.imshow(img)
+    plt.xticks([])
+    plt.yticks([])
+    i += 1
+    if i > 3 * 7:
+        break
+plt.suptitle('Augmented Images')
+plt.show()
+
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+from tensorflow.keras.applications.vgg16 import VGG16
+from tensorflow.keras.applications.vgg16 import preprocess_input
+from tensorflow.keras.preprocessing.image import load_img
+from tensorflow.keras.preprocessing.image import img_to_array
+from tensorflow.keras.models import Model
+from matplotlib import pyplot
+from numpy import expand_dims
+from matplotlib import pyplot
+
+import warnings
+warnings.filterwarnings('ignore')
+
+from tensorflow.keras.applications.efficientnet import preprocess_input
+import tensorflow as tf
+
+model = VGG16()
+
+# Summary of the model
+model.summary()
+
+image = load_img('/content/drive/My Drive/Crack/Overall/Pave Crack/00015.jpg', target_size=(224, 224))
+image = img_to_array(image)
+# expand dimensions so that it represents a single 'sample'
+image = expand_dims(image, axis=0)
+
+image = preprocess_input(image)
+
+for i in range(len(model.layers)):
+    layer = model.layers[i]
+    if 'conv' not in layer.name:
+        continue
+    print(i , layer.name , layer.output.shape)
+
+model = Model(inputs=model.inputs , outputs=model.layers[1].output)
+
+model2 = VGG16()
+
+
+blocks = [ 1,2,3,4, 5 ,6, 7]
+outputs = [model2.layers[i].output for i in blocks]
+
+model2 = Model( inputs= model2.inputs, outputs = outputs)
+
+features = model.predict(image)
+
+feature_map = model2.predict(image)
+
+for i,fmap in zip(blocks,feature_map):
+    fig = pyplot.figure(figsize=(20,15))
+    #https://stackoverflow.com/a/12444777
+    fig.suptitle("BLOCK_{}".format(i) , fontsize=20)
+    for i in range(1,features.shape[3]+1):
+
+        pyplot.subplot(8,8,i)
+        pyplot.imshow(fmap[0,:,:,i-1])
+
+pyplot.show()
+
+model2 = VGG16()
+
+blocks = [  8,9 ,10,11,12, 13 ,14,15,16, 17]
+outputs = [model2.layers[i].output for i in blocks]
+
+model2 = Model( inputs= model2.inputs, outputs = outputs)
+
+features = model.predict(image)
+
+feature_map = model2.predict(image)
+
+for i,fmap in zip(blocks,feature_map):
+    fig = pyplot.figure(figsize=(20,15))
+    #https://stackoverflow.com/a/12444777
+    fig.suptitle("BLOCK_{}".format(i) , fontsize=20)
+    for i in range(1,features.shape[3]+1):
+
+        pyplot.subplot(8,8,i)
+        pyplot.imshow(fmap[0,:,:,i-1])
+
+pyplot.show()
+
+
+
+
+
+
+
+train_data_dir = '/content/drive/My Drive/Crack/Pavement/'
+BATCH_SIZE = 32
+IMG_SIZE =(224, 224)
+EPOCHS = 25
+SHUFFLE_BUFFER = 1000
+PRETRAINED_MODEL_PATH = "https://www.kaggle.com/models/google/resnet-v2/frameworks/TensorFlow2/variations/50-classification/versions/2"
+validation_split = 0.2
+
+import os
+print(os.listdir(train_data_dir))
+
+demo_datagen = ImageDataGenerator(
+    rotation_range=15,
+    width_shift_range=0.05,
+    height_shift_range=0.05,
+    rescale=1./255,
+    shear_range=0.05,
+    brightness_range=[0.1, 1.5],
+    horizontal_flip=True,
+    vertical_flip=True
+)
+
+data_dir = '/content/drive/My Drive/Crack/Pavement/'
+datagen = ImageDataGenerator(validation_split=0.2, rescale=1./255)
+train_generator = datagen.flow_from_directory(data_dir, target_size=(128, 128), batch_size=32, class_mode='categorical', subset='training')
+val_generator = datagen.flow_from_directory(data_dir, target_size=(128, 128), batch_size=32, class_mode='categorical', subset='validation')
+
+class_weights = class_weight.compute_class_weight('balanced', classes=np.unique(train_generator.classes), y=train_generator.classes)
+class_weights = {i : class_weights[i] for i in range(len(class_weights))}
+
+images, labels = next(train_generator)
+
+from skimage.filters import threshold_otsu
+
+def apply_otsu(images_arr):
+    sobel_images = []
+    for img in images_arr:
+        gray_img = np.dot(img[...,:3], [0.2989, 0.5870, 0.1140])
+        thresh_val = threshold_otsu(gray_img)
+        mask=np.where(gray_img>thresh_val,1,0)
+        sobel_img = mask.copy()
+        sobel_images.append(sobel_img)
+    return np.array(sobel_images)
+
+sobel_images = apply_otsu(images)
+
+def plot_otsu_images(original_images, sobel_images, labels_arr):
+    fig, axes = plt.subplots(5,5, figsize=(10, 10))
+    axes = axes.flatten()
+    for orig_img, sob_img, lbl, ax in zip(original_images, sobel_images, labels_arr, axes):
+        ax.imshow(sob_img, cmap='gray')
+        ax.axis('off')
+        ax.set_title(np.argmax(lbl))
+    plt.tight_layout()
+    plt.show()
+
+plot_otsu_images(images, sobel_images, labels)
+
+def apply_sobel(images_arr):
+    sobel_images = []
+    for img in images_arr:
+        gray_img = np.dot(img[...,:3], [0.2989, 0.5870, 0.1140])
+        sobel_x = sobel(gray_img, axis=0, mode='constant')
+        sobel_y = sobel(gray_img, axis=1, mode='constant')
+        sobel_img = np.hypot(sobel_x, sobel_y)
+        sobel_images.append(sobel_img)
+    return np.array(sobel_images)
+
+sobel_images = apply_sobel(images)
+
+def plot_sobel_images(original_images, sobel_images, labels_arr):
+    fig, axes = plt.subplots(5,5, figsize=(10, 10))
+    axes = axes.flatten()
+    for orig_img, sob_img, lbl, ax in zip(original_images, sobel_images, labels_arr, axes):
+        ax.imshow(sob_img, cmap='gray')
+        ax.axis('off')
+        ax.set_title(np.argmax(lbl))
+    plt.tight_layout()
+    plt.show()
+
+plot_sobel_images(images, sobel_images, labels)
+
+import numpy as np
+from skimage.io import imread
+from skimage import measure
+from skimage import color
+from skimage import data, img_as_float
+import matplotlib.pyplot as plt
+from skimage import morphology
+from skimage import util
+from skimage import filters
+from scipy import ndimage
+from skimage import feature
+from skimage import transform
+from skimage import draw
+import pandas as pd
+from PIL import Image
+import cv2
+
+def apply_otsu(images_arr):
+    sobel_images = []
+    for img in images_arr:
+        gray_img = color.rgb2gray(img)
+        detected = feature.canny(gray_img,sigma=0.7)
+
+
+        sobel_images.append(detected)
+    return np.array(sobel_images)
+
+sobel_images = apply_otsu(images)
+
+def plot_otsu_images(original_images, sobel_images, labels_arr):
+    fig, axes = plt.subplots(5,5, figsize=(10, 10))
+    axes = axes.flatten()
+    for orig_img, sob_img, lbl, ax in zip(original_images, sobel_images, labels_arr, axes):
+        ax.imshow(sob_img, cmap='gray')
+        ax.axis('off')
+        ax.set_title(np.argmax(lbl))
+    plt.tight_layout()
+    plt.show()
+
+plot_otsu_images(images, sobel_images, labels)
+
+image_paths=['/content/drive/My Drive/Crack/Pavement/WCrack/00001.jpg','/content/drive/My Drive/Crack/Pavement/WCrack/00002.jpg',
+             '/content/drive/My Drive/Crack/Pavement/WCrack/00003.jpg','/content/drive/My Drive/Crack/Pavement/WCrack/00004.jpg',
+             '/content/drive/My Drive/Crack/Pavement/WCrack/00005.jpg',
+             '/content/drive/My Drive/Crack/Pavement/WCrack/00006.jpg','/content/drive/My Drive/Crack/Pavement/WCrack/00007.jpg','/content/drive/My Drive/Crack/Pavement/WCrack/00008.jpg',
+             '/content/drive/My Drive/Crack/Pavement/WCrack/00009.jpg','/content/drive/My Drive/Crack/Pavement/WCrack/00010.jpg',
+  '/content/drive/My Drive/Crack/Pavement/WCrack/00011.jpg','/content/drive/My Drive/Crack/Pavement/WCrack/00012.jpg',
+
+             '/content/drive/My Drive/Crack/Pavement/WCrack/00013.jpg','/content/drive/My Drive/Crack/Pavement/WCrack/00014.jpg',
+               '/content/drive/My Drive/Crack/Pavement/WCrack/00015.jpg','/content/drive/My Drive/Crack/Pavement/WCrack/00016.jpg',
+             '/content/drive/My Drive/Crack/Pavement/WCrack/00017.jpg','/content/drive/My Drive/Crack/Pavement/WCrack/00018.jpg',
+             '/content/drive/My Drive/Crack/Pavement/WCrack/00019.jpg','/content/drive/My Drive/Crack/Pavement/WCrack/00020.jpg'
+             ]
+
+image = cv2.imread('/content/drive/My Drive/Crack/Pavement/WCrack/00001.jpg')
+
+# Change color to RGB (from BGR)
+image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+plt.imshow(image)
+
+# Convert to grayscale
+gray = cv2.cvtColor(image,cv2.COLOR_RGB2GRAY)
+
+# Create a binary thresholded image
+retval, binary = cv2.threshold(gray, 225, 255, cv2.THRESH_BINARY_INV)
+
+plt.imshow(binary, cmap='gray')
+
+contours, hierarchy = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+# Draw all contours on a copy of the original image
+contours_image = np.copy(image)
+contours_image = cv2.drawContours(contours_image, contours, -1, (0,255,0), 3)
+
+plt.imshow(contours_image)
+
+contour = image
+contour= cv2.cvtColor(contour, cv2.COLOR_BGR2GRAY)
+
+_,thresh = cv2.threshold(contour , 233, 255,cv2.THRESH_BINARY_INV)
+
+contours, hier = cv2.findContours(thresh , cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+img= cv2.imread('/content/drive/My Drive/Crack/Pavement/WCrack/00001.jpg')
+img=cv2.cvtColor(img, cv2.COLOR_BGR2RGB) # cv2 reads images in BGR format, we need to convert them to RGB as matplotlib shows images in RGB
+img_copy=img.copy()
+rows, cols, chanels= img.shape
+print("rows ={}, columns={}, color channels={}".format(rows, cols, chanels))
+
+import numpy as np
+import matplotlib.pyplot as plt
+import imageio
+
+def format_and_render_plot():
+    '''Custom function to simplify common formatting operations for exercises. Operations include:
+    1. Turning off axis grids.
+    2. Calling `plt.tight_layout` to improve subplot spacing.
+    3. Calling `plt.show()` to render plot.'''
+    fig = plt.gcf()
+    for ax in fig.axes:
+        ax.axis('off')
+    plt.tight_layout()
+    plt.show()
+
+im = imageio.imread('/content/drive/My Drive/Crack/Pavement/WCrack/00014.jpg')
+im = im.astype('float64')
+
+print('Data type:', im.dtype)
+print('Min value:', im.min())
+print('Max value:', im.max())
+
+# Plot the grayscale image
+plt.imshow(im, cmap='gray', vmin=0, vmax=255);
+plt.colorbar();
+
+import scipy.ndimage as ndi
+
+mask_dilate = ndi.binary_dilation(50, iterations=5)
+mask_closed = ndi.binary_closing(50, iterations=5)
+
+# Plot masked images
+fig, axes = plt.subplots(1, 3)
+axes[0].imshow(mask_bone, cmap='gray')
+axes[1].imshow(mask_dilate, cmap='gray')
+axes[2].imshow(mask_closed, cmap='gray')
+format_and_render_plot()
+
+mask_bone = im >= 75
+mask_skin = (im >= 35) & (im < 75)
+
+# Plot the skin (0) and bone (1) masks
+fig, axes = plt.subplots(1, 2)
+axes[0].imshow(mask_skin, cmap='gray')
+axes[1].imshow(mask_bone, cmap='gray')
+format_and_render_plot()
+
+import numpy as np
+import cv2
+from google.colab.patches import cv2_imshow
+
+#reading the image
+input_image = cv2.imread('/content/drive/My Drive/Crack/Pavement/WCrack/00014.jpg')
+
+#resizing the image according to our need
+# resize() function takes 2 parameters,
+# the image and the dimensions
+input_image = cv2.resize(input_image, (480, 480))
+
+# Extracting the height and width of an image
+rows, cols = input_image.shape[:2]
+
+# generating vignette mask using Gaussian
+# resultant_kernels
+X_resultant_kernel = cv2.getGaussianKernel(cols,200)
+Y_resultant_kernel = cv2.getGaussianKernel(rows,200)
+
+#generating resultant_kernel matrix
+resultant_kernel = Y_resultant_kernel * X_resultant_kernel.T
+
+#creating mask and normalising by using np.linalg
+# function
+mask = 255 * resultant_kernel / np.linalg.norm(resultant_kernel)
+output = np.copy(input_image)
+
+# applying the mask to each channel in the input image
+for i in range(3):
+    output[:,:,i] = output[:,:,i] * mask
+
+#displaying the original image
+cv2_imshow(input_image)
+
+#displaying the vignette filter image
+cv2_imshow(output)
+
+from google.colab import drive
+drive.mount("/content/drive")
+
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+from tensorflow.keras.applications.vgg16 import VGG16
+from tensorflow.keras.applications.vgg16 import preprocess_input
+from tensorflow.keras.preprocessing.image import load_img
+from tensorflow.keras.preprocessing.image import img_to_array
+from tensorflow.keras.models import Model
+from matplotlib import pyplot
+from numpy import expand_dims
+from matplotlib import pyplot
+
+import warnings
+warnings.filterwarnings('ignore')
+
+from tensorflow.keras.applications.efficientnet import preprocess_input
+import tensorflow as tf
+
+model = VGG16()
+
+# Summary of the model
+model.summary()
+
+image = load_img('/content/drive/My Drive/Crack/Bridgewallcrack/img/00002.jpg', target_size=(224, 224))
+image = img_to_array(image)
+# expand dimensions so that it represents a single 'sample'
+image = expand_dims(image, axis=0)
+
+image = preprocess_input(image)
+
+for i in range(len(model.layers)):
+    layer = model.layers[i]
+    if 'conv' not in layer.name:
+        continue
+    print(i , layer.name , layer.output.shape)
+
+model = Model(inputs=model.inputs , outputs=model.layers[1].output)
+
+model2 = VGG16()
+
+
+blocks = [ 2,3,4, 5 ,6, 7]
+outputs = [model2.layers[i].output for i in blocks]
+
+model2 = Model( inputs= model2.inputs, outputs = outputs)
+
+features = model.predict(image)
+
+feature_map = model2.predict(image)
+
+for i,fmap in zip(blocks,feature_map):
+    fig = pyplot.figure(figsize=(20,15))
+    #https://stackoverflow.com/a/12444777
+    fig.suptitle("BLOCK_{}".format(i) , fontsize=20)
+    for i in range(1,features.shape[3]+1):
+
+        pyplot.subplot(8,8,i)
+        pyplot.imshow(fmap[0,:,:,i-1])
+
+pyplot.show()
+
+model2 = VGG16()
+
+blocks = [  8,9 ,10,11,12, 13 ,14,15,16, 17]
+outputs = [model2.layers[i].output for i in blocks]
+
+model2 = Model( inputs= model2.inputs, outputs = outputs)
+
+features = model.predict(image)
+
+feature_map = model2.predict(image)
+
+for i,fmap in zip(blocks,feature_map):
+    fig = pyplot.figure(figsize=(20,15))
+    #https://stackoverflow.com/a/12444777
+    fig.suptitle("BLOCK_{}".format(i) , fontsize=20)
+    for i in range(1,features.shape[3]+1):
+
+        pyplot.subplot(8,8,i)
+        pyplot.imshow(fmap[0,:,:,i-1])
+
+pyplot.show()
+
+
+
+
+
+# -*- coding: utf-8 -*-
+"""CrackDefect.ipynb
+
+
+Original file is located at
+    https://colab.research.google.com/drive/1HcDLMd1-sSAwlEphlWSzY0y-7rmyeh49
+"""
+
+from google.colab import drive
+drive.mount("/content/drive")
+
+!pip install keras_unet_collection
+
+import keras
+from glob import glob
+from tqdm import tqdm
+import tensorflow as tf
+from numpy import zeros, random
+
+# Data
+from tensorflow.image import resize
+from keras.preprocessing.image import load_img, img_to_array
+
+# Data viz
+import matplotlib.pyplot as plt
+
+# Model
+from keras.models import Model, Sequential, load_model
+from keras.layers import Conv2D, Conv2DTranspose, concatenate, MaxPool2D, Dropout, BatchNormalization, Layer, Input, add, multiply, UpSampling2D
+
+# Model Viz
+from tensorflow.keras.utils import plot_model
+
+# Callback
+from keras.callbacks import Callback
+
+import os
+import cv2
+import numpy as np
+from matplotlib import pyplot as plt
+import glob
+from datetime import datetime
+from PIL import Image
+import random
+import tensorflow as tf
+
+from tensorflow.keras.optimizers import Adam
+from keras.callbacks import ModelCheckpoint, EarlyStopping
+from tensorflow.keras.metrics import MeanIoU
+
+from keras_unet_collection import losses
+
+from sklearn.model_selection import train_test_split
+
+augmented_images_dir_path = "/content/drive/MyDrive/Crack/img"
+augmented_masks_dir_path =  "/content/drive/MyDrive/Crack/mask"
+
+image_names = glob.glob(f"{augmented_images_dir_path}/*.jpg")
+image_names.sort()
+
+
+image_dataset = []
+
+for image_name in image_names:
+      image = cv2.imread(image_name, 1)
+      image = Image.fromarray(image)
+      image_dataset.append(np.array(image))
+
+mask_names = glob.glob(f"{augmented_masks_dir_path}/*.jpg")
+mask_names.sort()
+
+mask_dataset = []
+
+for image_name in mask_names:
+        image = cv2.imread(image_name, 0)
+        image = np.where(image>0, 255, image)
+        image = Image.fromarray(image)
+        mask_dataset.append(np.array(image))
+
+names = []
+for i in range(len(os.listdir(augmented_masks_dir_path))):
+  img_name = image_names[i].split("/")[-1]
+  mask_name = mask_names[i].split("/")[-1]
+
+  n1 = img_name.split(".")[0]
+  n2 = mask_name.split(".")[0]
+  names.append(n1==n2)
+
+all(names)
+
+image_dataset = np.array(image_dataset)/255.
+mask_dataset = np.expand_dims((np.array(mask_dataset)),3) /255.
+
+X_train, X_test, y_train, y_test = train_test_split(image_dataset, mask_dataset, test_size = 0.20, random_state = 9)
+
+X_train.shape
+
+#Sanity check
+image_number = random.randint(0, len(X_train))
+plt.figure(figsize=(12, 6))
+plt.subplot(121)
+plt.imshow(np.reshape(X_train[image_number], (227, 227, 3)), cmap='gray')
+plt.subplot(122)
+plt.imshow(np.reshape(y_train[image_number], (227, 227)), cmap='gray')
+plt.show()
+
+def load_image(path):
+    img = resize( img_to_array( load_img(path) )/255. , (256,256))
+    return img
+
+root_path = '/content/drive/MyDrive/Crack/'
+
+root_path = '/content/drive/MyDrive/Crack/img/'
+image_paths = sorted(glob(root_path + f"*.jpg"))
+mask_paths = []
+for path in image_paths:
+    mask_path = path.replace('img','mask')
+    mask_path = mask_path.replace('.jpg','.jpg')
+    mask_paths.append(mask_path)
+print(f"Total Number of Images  : {len(image_paths)}")
+
+images = zeros(shape=(len(image_paths), 256, 256, 3))
+masks = zeros(shape=(len(image_paths), 256, 256, 3))
+for n, (img_path, mask_path) in tqdm(enumerate(zip(image_paths, mask_paths)), desc="Loading"):
+    images[n] = load_image(img_path)
+    masks[n] = load_image(mask_path)
+
+
+
+X_train, X_test, y_train, y_test = train_test_split(images, masks, test_size = 0.20, random_state = 9)
+
+X_train.shape
+
+y_train.shape
+
+#Sanity check
+image_number = random.randint(0, len(X_train))
+plt.figure(figsize=(12, 6))
+plt.subplot(121)
+plt.imshow(np.reshape(X_train[image_number], (256, 256, 3)), cmap='gray')
+plt.subplot(122)
+plt.imshow(np.reshape(y_train[image_number], (256, 256,3)), cmap='gray')
+plt.show()
+
+from keras_unet_collection import losses
+metrics_set=[ tf.keras.metrics.BinaryIoU(target_class_ids=[1]), losses.dice_coef]
+
+IMG_HEIGHT = X_train.shape[1]
+IMG_WIDTH  = X_train.shape[2]
+IMG_CHANNELS = X_train.shape[3]
+input_shape = (IMG_HEIGHT,IMG_WIDTH,IMG_CHANNELS)
+num_labels = 1  #Binary
+batch_size = 16
+epochs = 10
+
+y_train = y_train[:,:,:,1] # Select channel 1 of y_train
+y_train = y_train[..., None]
+
+y_train = y_train[:,:,:,0]
+y_train = np.expand_dims(y_train, axis=-1)
+
+y_test = y_test[:,:,:,0]
+y_test = np.expand_dims(y_test, axis=-1)
+
+filepath = '/content/drive/MyDrive/attunet_model.keras'
+checkpoint = ModelCheckpoint(filepath=filepath,
+                             monitor="val_dice_coef",
+                             verbose=1,
+                             save_best_only=True,
+                             mode="max")
+
+earlyStopping = EarlyStopping(patience=5)
+
+callbacks = [checkpoint, earlyStopping]
+
+from keras_unet_collection.models import att_unet_2d
+
+model = att_unet_2d((256, 256, 3),
+                      filter_num=[64, 128, 256, 512, 1024],
+                      n_labels=1,
+                      stack_num_down=2,
+                      stack_num_up=2, activation='ReLU',
+                      atten_activation='ReLU'
+                      , attention='add',
+                      output_activation='Sigmoid',
+                      batch_norm=True,
+                      pool=False,
+                      unpool=False,
+                      backbone='VGG16',
+                      weights='imagenet',
+                      freeze_backbone=True,
+                      freeze_batch_norm=True,
+                      name='attunet'
+                      )
+
+model.compile(loss=tf.keras.losses.binary_crossentropy,
+              optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4),
+              metrics=metrics_set)
+
+
+
+start = datetime.now()
+history = model.fit(X_train, y_train,
+                    verbose=1,
+                    batch_size = batch_size,
+                    validation_data=(X_test, y_test ),
+                    epochs=epochs,
+                    callbacks=callbacks)
+
+stop = datetime.now()
+
+print(f"Execution time: {stop-start}")
+
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('Model Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.legend(['Train', 'Validation'], loc='upper right')
+plt.show()
+
+plt.plot(history.history['dice_coef'])
+plt.plot(history.history['val_dice_coef'])
+plt.title('Model dice_coef')
+plt.xlabel('Epoch')
+plt.ylabel('dice_coef')
+plt.legend(['Train', 'Validation'], loc='upper right')
+plt.show()
+
+import random
+test_img_number = random.randint(0, X_test.shape[0]-1)
+test_img = X_test[test_img_number]
+ground_truth=y_test[test_img_number]
+
+test_img_input=np.expand_dims(test_img, 0)
+prediction = (model.predict(test_img_input)[0,:,:,0] > 0.5).astype(np.uint8)
+
+plt.figure(figsize=(16, 8))
+plt.subplot(231)
+plt.title('Testing Image')
+plt.imshow(test_img, cmap='gray')
+plt.subplot(232)
+plt.title('Testing Label')
+plt.imshow(ground_truth[:,:,0], cmap='gray')
+plt.subplot(233)
+plt.title('Prediction on test image')
+plt.imshow(prediction, cmap='gray')
+
+plt.show()
+
+import pandas as pd
+n_classes = 2
+
+IoU_values = []
+for img in range(0, X_test.shape[0]):
+    temp_img = X_test[img]
+    ground_truth=y_test[img]
+    temp_img_input=np.expand_dims(temp_img, 0)
+    prediction = (model.predict(temp_img_input)[0,:,:,0] > 0.5).astype(np.uint8)
+
+    IoU = MeanIoU(num_classes=n_classes)
+    IoU.update_state(ground_truth[:,:,0], prediction)
+    IoU = IoU.result().numpy()
+    IoU_values.append(IoU)
+
+df = pd.DataFrame(IoU_values, columns=["IoU"])
+df = df[df.IoU != 1.0]
+mean_IoU = df.mean().values
+
+print(f"Mean IoU for test dataset is: {round(mean_IoU[0]*100,2)}%")
+
+# Commented out IPython magic to ensure Python compatibility.
+
+import matplotlib.pyplot as plt
+# %matplotlib inline
+
+def ax_decorate_box(ax):
+    [j.set_linewidth(0) for j in ax.spines.values()]
+    ax.tick_params(axis="both", which="both", bottom=False, top=False, \
+               labelbottom=False, left=False, right=False, labelleft=False)
+    return ax
+
+y_pred = model.predict([X_test])
+
+i_sample = random.randint(0, X_test.shape[0]-1)
+
+fig, AX = plt.subplots(1, 3, figsize=(13, (13-0.2)/3))
+plt.subplots_adjust(0, 0, 1, 1, hspace=0, wspace=0.1)
+for ax in AX:
+    ax = ax_decorate_box(ax)
+AX[0].pcolormesh(np.mean(X_test[i_sample, ...,], axis=-1), cmap=plt.cm.gray)
+AX[1].pcolormesh(y_pred[i_sample, ..., 0], cmap=plt.cm.jet)
+AX[2].pcolormesh(y_test[i_sample, ..., 0], cmap=plt.cm.jet)
+
+AX[0].set_title("Original", fontsize=14);
+AX[1].set_title("Pixels belong to crack (red for high probabilities)", fontsize=14);
+AX[2].set_title("Labeled truth", fontsize=14);
+
+i_sample = random.randint(0, X_test.shape[0]-1)
+
+fig, AX = plt.subplots(1, 3, figsize=(13, (13-0.2)/3))
+plt.subplots_adjust(0, 0, 1, 1, hspace=0, wspace=0.1)
+for ax in AX:
+    ax = ax_decorate_box(ax)
+AX[0].pcolormesh(np.mean(X_test[i_sample, ...,], axis=-1), cmap=plt.cm.gray)
+AX[1].pcolormesh(y_pred[i_sample, ..., 0], cmap=plt.cm.jet)
+AX[2].pcolormesh(y_test[i_sample, ..., 0], cmap=plt.cm.jet)
+
+AX[0].set_title("Original", fontsize=14);
+AX[1].set_title("Pixels belong to crack (red for high probabilities)", fontsize=14);
+AX[2].set_title("Labeled truth", fontsize=14);
+
+i_sample = random.randint(0, X_test.shape[0]-1)
+
+fig, AX = plt.subplots(1, 3, figsize=(13, (13-0.2)/3))
+plt.subplots_adjust(0, 0, 1, 1, hspace=0, wspace=0.1)
+for ax in AX:
+    ax = ax_decorate_box(ax)
+AX[0].pcolormesh(np.mean(X_test[i_sample, ...,], axis=-1), cmap=plt.cm.gray)
+AX[1].pcolormesh(y_pred[i_sample, ..., 0], cmap=plt.cm.jet)
+AX[2].pcolormesh(y_test[i_sample, ..., 0], cmap=plt.cm.jet)
+
+AX[0].set_title("Original", fontsize=14);
+AX[1].set_title("Pixels belong to crack (red for high probabilities)", fontsize=14);
+AX[2].set_title("Labeled truth", fontsize=14);
+
+i_sample = random.randint(0, X_test.shape[0]-1)
+
+fig, AX = plt.subplots(1, 3, figsize=(13, (13-0.2)/3))
+plt.subplots_adjust(0, 0, 1, 1, hspace=0, wspace=0.1)
+for ax in AX:
+    ax = ax_decorate_box(ax)
+AX[0].pcolormesh(np.mean(X_test[i_sample, ...,], axis=-1), cmap=plt.cm.gray)
+AX[1].pcolormesh(y_pred[i_sample, ..., 0], cmap=plt.cm.jet)
+AX[2].pcolormesh(y_test[i_sample, ..., 0], cmap=plt.cm.jet)
+
+AX[0].set_title("Original", fontsize=14);
+AX[1].set_title("Pixels belong to crack (red for high probabilities)", fontsize=14);
+AX[2].set_title("Labeled truth", fontsize=14);
+
+i_sample = random.randint(0, X_test.shape[0]-1)
+
+fig, AX = plt.subplots(1, 3, figsize=(13, (13-0.2)/3))
+plt.subplots_adjust(0, 0, 1, 1, hspace=0, wspace=0.1)
+for ax in AX:
+    ax = ax_decorate_box(ax)
+AX[0].pcolormesh(np.mean(X_test[i_sample, ...,], axis=-1), cmap=plt.cm.gray)
+AX[1].pcolormesh(y_pred[i_sample, ..., 0], cmap=plt.cm.jet)
+AX[2].pcolormesh(y_test[i_sample, ..., 0], cmap=plt.cm.jet)
+
+AX[0].set_title("Original", fontsize=14);
+AX[1].set_title("Pixels belong to crack (red for high probabilities)", fontsize=14);
+AX[2].set_title("Labeled truth", fontsize=14);
+
+i_sample = random.randint(0, X_test.shape[0]-1)
+
+fig, AX = plt.subplots(1, 3, figsize=(13, (13-0.2)/3))
+plt.subplots_adjust(0, 0, 1, 1, hspace=0, wspace=0.1)
+for ax in AX:
+    ax = ax_decorate_box(ax)
+AX[0].pcolormesh(np.mean(X_test[i_sample, ...,], axis=-1), cmap=plt.cm.gray)
+AX[1].pcolormesh(y_pred[i_sample, ..., 0], cmap=plt.cm.jet)
+AX[2].pcolormesh(y_test[i_sample, ..., 0], cmap=plt.cm.jet)
+
+AX[0].set_title("Original", fontsize=14);
+AX[1].set_title("Pixels belong to crack (red for high probabilities)", fontsize=14);
+AX[2].set_title("Labeled truth", fontsize=14);
+
+i_sample = random.randint(0, X_test.shape[0]-1)
+
+fig, AX = plt.subplots(1, 3, figsize=(13, (13-0.2)/3))
+plt.subplots_adjust(0, 0, 1, 1, hspace=0, wspace=0.1)
+for ax in AX:
+    ax = ax_decorate_box(ax)
+AX[0].pcolormesh(np.mean(X_test[i_sample, ...,], axis=-1), cmap=plt.cm.gray)
+AX[1].pcolormesh(y_pred[i_sample, ..., 0], cmap=plt.cm.jet)
+AX[2].pcolormesh(y_test[i_sample, ..., 0], cmap=plt.cm.jet)
+
+AX[0].set_title("Original", fontsize=14);
+AX[1].set_title("Pixels belong to crack (red for high probabilities)", fontsize=14);
+AX[2].set_title("Labeled truth", fontsize=14);
+
+i_sample = random.randint(0, X_test.shape[0]-1)
+
+fig, AX = plt.subplots(1, 3, figsize=(13, (13-0.2)/3))
+plt.subplots_adjust(0, 0, 1, 1, hspace=0, wspace=0.1)
+for ax in AX:
+    ax = ax_decorate_box(ax)
+AX[0].pcolormesh(np.mean(X_test[i_sample, ...,], axis=-1), cmap=plt.cm.gray)
+AX[1].pcolormesh(y_pred[i_sample, ..., 0], cmap=plt.cm.jet)
+AX[2].pcolormesh(y_test[i_sample, ..., 0], cmap=plt.cm.jet)
+
+AX[0].set_title("Original", fontsize=14);
+AX[1].set_title("Pixels belong to crack (red for high probabilities)", fontsize=14);
+AX[2].set_title("Labeled truth", fontsize=14);
+
+i_sample = random.randint(0, X_test.shape[0]-1)
+
+fig, AX = plt.subplots(1, 3, figsize=(13, (13-0.2)/3))
+plt.subplots_adjust(0, 0, 1, 1, hspace=0, wspace=0.1)
+for ax in AX:
+    ax = ax_decorate_box(ax)
+AX[0].pcolormesh(np.mean(X_test[i_sample, ...,], axis=-1), cmap=plt.cm.gray)
+AX[1].pcolormesh(y_pred[i_sample, ..., 0], cmap=plt.cm.jet)
+AX[2].pcolormesh(y_test[i_sample, ..., 0], cmap=plt.cm.jet)
+
+AX[0].set_title("Original", fontsize=14);
+AX[1].set_title("Pixels belong to crack (red for high probabilities)", fontsize=14);
+AX[2].set_title("Labeled truth", fontsize=14);
+
+from tensorflow.keras.utils import normalize
+import os
+import cv2
+from PIL import Image
+import numpy as np
+from matplotlib import pyplot as plt
+import glob
+from skimage.morphology import medial_axis
+from skimage import img_as_ubyte
+from  scipy import ndimage
+from keras.models import load_model
+from skimage.morphology import medial_axis, label
+import math
+from skimage.measure import label, regionprops
+import random
+
+X_train, X_test, y_train, y_test = train_test_split(images, masks, test_size = 0.2, random_state = 9)
+
+image_number = random.randint(0, len(X_test)-1)
+plt.figure(figsize=(12, 6))
+plt.subplot(121)
+plt.imshow(np.reshape(X_test[image_number], (256,256,3)), cmap='gray')
+plt.subplot(122)
+plt.imshow(np.reshape(y_test[image_number], (256,256,3)), cmap='gray')
+
+# crack instance segment
+
+def instance_segment(np_image):
+  # get crack
+  # im_original = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+  rgb_original = cv2.cvtColor(np_image, cv2.COLOR_GRAY2RGB)  # rgb just for demo purpose
+  if len(np.unique(np_image)) == 1:
+    # print("no crack")
+    return np_image, 0
+
+  labeled = label(np_image, background=0)
+  pixel_values = np.unique(labeled)
+  cracks = [np.where(labeled != label, 0, labeled) for label in pixel_values]
+  del cracks[0]
+
+  return cracks
+
+from skimage.morphology import skeletonize
+def filter_crack_instances(cracks, np_image):
+
+  instances = []
+  for crack_instance in cracks:
+      im = crack_instance.astype(np.uint8) * 255
+      rgb = cv2.cvtColor(im, cv2.COLOR_GRAY2RGB)  # rgb just for demo purpose
+      _, crack = cv2.threshold(im, 50, 255, cv2.THRESH_BINARY)
+
+      # get medial axis
+      med_plot = np.zeros((256,256), np.uint8)
+      medial, distance = medial_axis(im, return_distance=True)
+      med_img = img_as_ubyte(medial)
+      med_contours, _ = cv2.findContours(med_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+      cv2.drawContours(med_plot, med_contours, -1, (255, 0, 0), 1)
+      med_pts = [v[0] for v in med_contours[0]]
+
+      # get point with maximal distance from medial axis
+      max_idx = np.argmax(distance)
+      max_pos = np.unravel_index(max_idx, distance.shape)
+      max_dist = distance[max_pos]
+      coords = np.array([max_pos[1], max_pos[0]])
+      # print(f"max distance from medial axis to boundary = {max_dist} at x,y: {coords}")
+
+      border_values = {0, 256}
+      if coords[1] in border_values or coords[0] in border_values:
+        continue
+
+      # interpolate orthogonal of medial axis at coords
+      delta = 3
+      try:
+          idx = next(i for i, v in enumerate(med_pts) if (v == coords).all())
+      except StopIteration:
+          continue
+
+      px1, py1 = med_pts[(idx-delta) % len(med_pts)]
+      px2, py2 = med_pts[(idx+delta) % len(med_pts)]
+      orth = np.array([py1 - py2, px2 - px1]) * max(im.shape)
+      # intersect orthogonal with crack and get contour
+      orth_img = np.zeros(im.shape, dtype=np.uint8)
+      A = tuple(coords + orth)
+      B = tuple(coords - orth)
+      cv2.line(orth_img, A, B, color=255, thickness=1)
+      gap_img = cv2.bitwise_and(orth_img, crack)
+
+      gap_contours, _ = cv2.findContours(gap_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+      gap_pts = [v[0] for v in gap_contours[0]]
+
+      if len(gap_pts) == 1:
+        continue
+
+      # determine the end points of the gap contour by negative dot product
+      n = len(gap_pts)
+      gap_ends = [
+      p for i, p in enumerate(gap_pts)
+      if np.dot(p - gap_pts[(i-1) % n], gap_pts[(i+1) % n] - p) < 0
+      ]
+      # print(f"Maximum gap found from {gap_ends[0]} to {gap_ends[1]}")
+
+      C = tuple(gap_ends[0])
+      D = tuple(gap_ends[1])
+      distance = round(calculate_euclidean_distance(C,D),3)
+      instances.append([[C,D], distance])
+
+  return instances
+
+def calculate_euclidean_distance(p1,p2):
+  s1 = (math.pow(p1[0] - p2[0],2))
+  s2 = (math.pow(p1[1] - p2[1],2))
+  euclidean_distance = math.sqrt(s1+s2)
+  return euclidean_distance
+
+
+def get_boundary(numpy_img, pixel_value):
+  canny_Img = cv2.Canny(numpy_img,100,200)
+  contours,_ = cv2.findContours(canny_Img,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+  canvas = np.zeros_like(numpy_img)
+  boundary = cv2.drawContours(canvas , contours, -1, pixel_value, 1)
+  return boundary
+
+
+def crack_measurement(np_image):
+  # get crack
+  # im_original = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+  rgb_original = cv2.cvtColor(np_image, cv2.COLOR_GRAY2RGB)  # rgb just for demo purpose
+  if len(np.unique(np_image)) == 1:
+    # print("no crack")
+    return np_image, 0
+
+  labeled = label(np_image, background=0)
+  pixel_values = np.unique(labeled)
+  cracks = [np.where(labeled != label, 0, labeled) for label in pixel_values]
+  if len(cracks) > 1:
+    del cracks[0]
+
+  crack_list = filter_crack_instances(cracks, np_image)
+  if crack_list == []:
+    return np_image, 0
+
+  crack_line_points = []
+  d = 0
+  for crack_prop in crack_list:
+    if crack_prop[1] > d:
+      d = crack_prop[1]
+      crack_line_points = crack_prop[0]
+
+  rgb_original = cv2.line(rgb_original, crack_line_points[0], crack_line_points[1], color=(0, 0, 255), thickness=1)
+  text = str(d) + "px"
+  rgb_original = cv2.putText(rgb_original, text, (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1, cv2.LINE_AA)
+
+
+  return rgb_original, d
+
+!pip install keras_unet_collection
+from keras_unet_collection.transformer_layers import patch_extract, patch_embedding
+from keras_unet_collection.activations import GELU
+
+def crack_measurement(np_image):
+  # get crack
+  # im_original = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+  # rgb_original = cv2.cvtColor(np_image, cv2.COLOR_GRAY2RGB)  # rgb just for demo purpose
+  rgb_original = np_image # np_image is already in RGB format, no need to convert
+  if len(np.unique(np_image)) == 1:
+    # print("no crack")
+    return np_image, 0
+
+  # Convert the image to grayscale before further processing
+  gray_image = cv2.cvtColor(np_image, cv2.COLOR_RGB2GRAY)
+
+  labeled = label(gray_image, background=0) # Use the grayscale image here
+  pixel_values = np.unique(labeled)
+  cracks = [np.where(labeled != label, 0, labeled) for label in pixel_values]
+  if len(cracks) > 1:
+    del cracks[0]
+
+  crack_list = filter_crack_instances(cracks, gray_image) # Use the grayscale image here
+  if crack_list == []:
+    return np_image, 0
+
+  crack_line_points = []
+  d = 0
+  for crack_prop in crack_list:
+    if crack_prop[1] > d:
+      d = crack_prop[1]
+      crack_line_points = crack_prop[0]
+
+  rgb_original = cv2.line(rgb_original, crack_line_points[0], crack_line_points[1], color=(0, 0, 255), thickness=1)
+  text = str(d) + "px"
+  rgb_original = cv2.putText(rgb_original, text, (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1, cv2.LINE_AA)
+
+
+  return rgb_original, d
+
+image_number = random.randint(0, len(images))
+
+image_number = 15
+print(f"analyzing image number: {image_number}")
+#original image
+
+#load ground-truth image
+image = np.reshape(images[image_number], (256,256,3))
+image1 = np.reshape(masks[image_number], (256,256,3))
+#predict
+
+threshold = 0.5
+prediction = (model.predict(np.expand_dims(image, 0))[0,:,:,0] > threshold).astype(np.uint8)
+prediction_measurement, predicted_distance = crack_measurement(image1.astype(np.uint8) * 255)
+
+
+plt.figure(figsize=(20, 10))
+plt.subplot(131)
+plt.title('Original Image')
+plt.imshow(image, cmap='gray')
+plt.subplot(132)
+plt.title('Predicted mask measurement')
+plt.imshow(prediction_measurement, cmap='gray')
+
+image_number = random.randint(0, len(images))
+
+image_number = 4
+print(f"analyzing image number: {image_number}")
+#original image
+
+#load ground-truth image
+image = np.reshape(images[image_number], (256,256,3))
+image1 = np.reshape(masks[image_number], (256,256,3))
+#predict
+
+threshold = 0.5
+#prediction = (model.predict(np.expand_dims(image, 0))[0,:,:,0] > threshold).astype(np.uint8)
+prediction_measurement, predicted_distance = crack_measurement(image1.astype(np.uint8) * 255)
+
+
+plt.figure(figsize=(20, 10))
+plt.subplot(131)
+plt.title('Original Image')
+plt.imshow(image, cmap='gray')
+plt.subplot(132)
+plt.title('Predicted mask measurement')
+plt.imshow(prediction_measurement, cmap='gray')
+
+image_number = random.randint(0, len(images))
+
+image_number = 5
+print(f"analyzing image number: {image_number}")
+#original image
+
+#load ground-truth image
+image = np.reshape(images[image_number], (256,256,3))
+image1 = np.reshape(masks[image_number], (256,256,3))
+#predict
+
+threshold = 0.5
+#prediction = (model.predict(np.expand_dims(image, 0))[0,:,:,0] > threshold).astype(np.uint8)
+prediction_measurement, predicted_distance = crack_measurement(image1.astype(np.uint8) * 255)
+
+
+plt.figure(figsize=(20, 10))
+plt.subplot(131)
+plt.title('Original Image')
+plt.imshow(image, cmap='gray')
+plt.subplot(132)
+plt.title('Predicted mask measurement')
+plt.imshow(prediction_measurement, cmap='gray')
+
+image_number = random.randint(0, len(images))
+
+image_number = 7
+print(f"analyzing image number: {image_number}")
+#original image
+
+#load ground-truth image
+image = np.reshape(images[image_number], (256,256,3))
+image1 = np.reshape(masks[image_number], (256,256,3))
+#predict
+
+threshold = 0.5
+#prediction = (model.predict(np.expand_dims(image, 0))[0,:,:,0] > threshold).astype(np.uint8)
+prediction_measurement, predicted_distance = crack_measurement(image1.astype(np.uint8) * 255)
+
+
+plt.figure(figsize=(20, 10))
+plt.subplot(131)
+plt.title('Original Image')
+plt.imshow(image, cmap='gray')
+plt.subplot(132)
+plt.title('Predicted mask measurement')
+plt.imshow(prediction_measurement, cmap='gray')
+
+image_number = random.randint(0, len(images))
+
+image_number = 6
+print(f"analyzing image number: {image_number}")
+#original image
+
+#load ground-truth image
+image = np.reshape(images[image_number], (256,256,3))
+image1 = np.reshape(masks[image_number], (256,256,3))
+#predict
+
+threshold = 0.5
+#prediction = (model.predict(np.expand_dims(image, 0))[0,:,:,0] > threshold).astype(np.uint8)
+prediction_measurement, predicted_distance = crack_measurement(image1.astype(np.uint8) * 255)
+
+
+plt.figure(figsize=(20, 10))
+plt.subplot(131)
+plt.title('Original Image')
+plt.imshow(image, cmap='gray')
+plt.subplot(132)
+plt.title('Predicted mask measurement')
+plt.imshow(prediction_measurement, cmap='gray')
+
+image_number = random.randint(0, len(images))
+
+image_number = 11
+print(f"analyzing image number: {image_number}")
+#original image
+
+#load ground-truth image
+image = np.reshape(images[image_number], (256,256,3))
+image1 = np.reshape(masks[image_number], (256,256,3))
+#predict
+
+threshold = 0.5
+#prediction = (model.predict(np.expand_dims(image, 0))[0,:,:,0] > threshold).astype(np.uint8)
+prediction_measurement, predicted_distance = crack_measurement(image1.astype(np.uint8) * 255)
+
+
+plt.figure(figsize=(20, 10))
+plt.subplot(131)
+plt.title('Original Image')
+plt.imshow(image, cmap='gray')
+plt.subplot(132)
+plt.title('Predicted mask measurement')
+plt.imshow(prediction_measurement, cmap='gray')
+
+image_number = random.randint(0, len(images))
+
+image_number = 12
+print(f"analyzing image number: {image_number}")
+#original image
+
+#load ground-truth image
+image = np.reshape(images[image_number], (256,256,3))
+image1 = np.reshape(masks[image_number], (256,256,3))
+#predict
+
+threshold = 0.5
+#prediction = (model.predict(np.expand_dims(image, 0))[0,:,:,0] > threshold).astype(np.uint8)
+prediction_measurement, predicted_distance = crack_measurement(image1.astype(np.uint8) * 255)
+
+
+plt.figure(figsize=(20, 10))
+plt.subplot(131)
+plt.title('Original Image')
+plt.imshow(image, cmap='gray')
+plt.subplot(132)
+plt.title('Predicted mask measurement')
+plt.imshow(prediction_measurement, cmap='gray')
+
+image_number = random.randint(0, len(images))
+
+image_number = 13
+print(f"analyzing image number: {image_number}")
+#original image
+
+#load ground-truth image
+image = np.reshape(images[image_number], (256,256,3))
+image1 = np.reshape(masks[image_number], (256,256,3))
+#predict
+
+threshold = 0.5
+#prediction = (model.predict(np.expand_dims(image, 0))[0,:,:,0] > threshold).astype(np.uint8)
+prediction_measurement, predicted_distance = crack_measurement(image1.astype(np.uint8) * 255)
+
+
+plt.figure(figsize=(20, 10))
+plt.subplot(131)
+plt.title('Original Image')
+plt.imshow(image, cmap='gray')
+plt.subplot(132)
+plt.title('Predicted mask measurement')
+plt.imshow(prediction_measurement, cmap='gray')
+
+image_number = random.randint(0, len(images))
+
+image_number = 14
+print(f"analyzing image number: {image_number}")
+#original image
+
+#load ground-truth image
+image = np.reshape(images[image_number], (256,256,3))
+image1 = np.reshape(masks[image_number], (256,256,3))
+#predict
+
+threshold = 0.5
+#prediction = (model.predict(np.expand_dims(image, 0))[0,:,:,0] > threshold).astype(np.uint8)
+prediction_measurement, predicted_distance = crack_measurement(image1.astype(np.uint8) * 255)
+
+
+plt.figure(figsize=(20, 10))
+plt.subplot(131)
+plt.title('Original Image')
+plt.imshow(image, cmap='gray')
+plt.subplot(132)
+plt.title('Predicted mask measurement')
+plt.imshow(prediction_measurement, cmap='gray')
+
+image_number = random.randint(0, len(images))
+
+image_number = 15
+print(f"analyzing image number: {image_number}")
+#original image
+
+#load ground-truth image
+image = np.reshape(images[image_number], (256,256,3))
+image1 = np.reshape(masks[image_number], (256,256,3))
+#predict
+
+threshold = 0.5
+#prediction = (model.predict(np.expand_dims(image, 0))[0,:,:,0] > threshold).astype(np.uint8)
+prediction_measurement, predicted_distance = crack_measurement(image1.astype(np.uint8) * 255)
+
+
+plt.figure(figsize=(20, 10))
+plt.subplot(131)
+plt.title('Original Image')
+plt.imshow(image, cmap='gray')
+plt.subplot(132)
+plt.title('Predicted mask measurement')
+plt.imshow(prediction_measurement, cmap='gray')
+
+image_number = random.randint(0, len(images))
+
+image_number = 17
+print(f"analyzing image number: {image_number}")
+#original image
+
+#load ground-truth image
+image = np.reshape(images[image_number], (256,256,3))
+image1 = np.reshape(masks[image_number], (256,256,3))
+#predict
+
+threshold = 0.5
+#prediction = (model.predict(np.expand_dims(image, 0))[0,:,:,0] > threshold).astype(np.uint8)
+prediction_measurement, predicted_distance = crack_measurement(image1.astype(np.uint8) * 255)
+
+
+plt.figure(figsize=(20, 10))
+plt.subplot(131)
+plt.title('Original Image')
+plt.imshow(image, cmap='gray')
+plt.subplot(132)
+plt.title('Predicted mask measurement')
+plt.imshow(prediction_measurement, cmap='gray')
+
+image_number = random.randint(0, len(images))
+
+image_number =21
+print(f"analyzing image number: {image_number}")
+#original image
+
+#load ground-truth image
+image = np.reshape(images[image_number], (256,256,3))
+image1 = np.reshape(masks[image_number], (256,256,3))
+#predict
+
+threshold = 0.5
+#prediction = (model.predict(np.expand_dims(image, 0))[0,:,:,0] > threshold).astype(np.uint8)
+prediction_measurement, predicted_distance = crack_measurement(image1.astype(np.uint8) * 255)
+
+
+plt.figure(figsize=(20, 10))
+plt.subplot(131)
+plt.title('Original Image')
+plt.imshow(image, cmap='gray')
+plt.subplot(132)
+plt.title('Predicted mask measurement')
+plt.imshow(prediction_measurement, cmap='gray')
+
+# Convert image1 to 8-bit single-channel grayscale
+image1_gray = cv2.cvtColor(image1.astype(np.uint8), cv2.COLOR_BGR2GRAY)
+
+# Find contours on the grayscale image
+gap_contours, _ = cv2.findContours(image1_gray, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+# Rest of your code...
+gap_pts = [v[0] for v in gap_contours[0]]
+
+# determine the end points of the gap contour by negative dot product
+n = len(gap_pts)
+gap_ends = [
+p for i, p in enumerate(gap_pts)
+if np.dot(p - gap_pts[(i-1) % n], gap_pts[(i+1) % n] - p) < 0
+]
+
+print(f"Maximum gap found from {gap_ends[0]} to {gap_ends[1]}")
+
+C = tuple(gap_ends[0])
+D = tuple(gap_ends[1])
+distance = round(calculate_euclidean_distance(C,D),3)
+print(f"crack width = {distance}")
+
+rgb_original = cv2.line(image1, C, D, color=(0, 0, 255), thickness=1)
+text = str(distance) + "px"
+rgb_original = cv2.putText(rgb_original, text, (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1, cv2.LINE_AA)
+
+plt.figure(figsize=(7, 7))
+plt.imshow(rgb_original)
+
+rgb_original = cv2.line(image, C, D, color=(255, 0, 0), thickness=1)
+text = str(distance) + "px"
+rgb_original = cv2.putText(image, text, (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1, cv2.LINE_AA)
+
+plt.figure(figsize=(7, 7))
+plt.imshow(image)
+
+
+
+
+
+!pip install keras_unet_collection
+
+import os
+import cv2
+import numpy as np
+from matplotlib import pyplot as plt
+import glob
+from datetime import datetime
+from PIL import Image
+import random
+import tensorflow as tf
+
+from tensorflow.keras.optimizers import Adam
+from keras.callbacks import ModelCheckpoint, EarlyStopping
+from tensorflow.keras.metrics import MeanIoU
+
+from keras_unet_collection import losses
+
+from sklearn.model_selection import train_test_split
+
+augmented_images_dir_path = "/content/drive/MyDrive/Crack/img"
+augmented_masks_dir_path =  "/content/drive/MyDrive/Crack/mask"
+
+augmented_masks_dir_path
+
+image_names = glob.glob(f"{augmented_images_dir_path}/*.jpg")
+image_names.sort()
+
+
+image_dataset = []
+
+for image_name in image_names:
+      image = cv2.imread(image_name, 1)
+      image = Image.fromarray(image)
+      image_dataset.append(np.array(image))
+
+mask_names = glob.glob(f"{augmented_masks_dir_path}/*.jpg")
+mask_names.sort()
+
+mask_dataset = []
+
+for image_name in mask_names:
+        image = cv2.imread(image_name, 0)
+        image = np.where(image>0, 255, image)
+        image = Image.fromarray(image)
+        mask_dataset.append(np.array(image))
+
+names = []
+for i in range(len(os.listdir(augmented_masks_dir_path))):
+  img_name = image_names[i].split("/")[-1]
+  mask_name = mask_names[i].split("/")[-1]
+
+  n1 = img_name.split(".")[0]
+  n2 = mask_name.split(".")[0]
+  names.append(n1==n2)
+
+all(names)
+
+image_dataset = np.array(image_dataset)/255.
+mask_dataset = np.expand_dims((np.array(mask_dataset)),3) /255.
+
+X_train, X_test, y_train, y_test = train_test_split(image_dataset, mask_dataset, test_size = 0.20, random_state = 9)
+
+X_train.shape
+
+image_number = random.randint(0, len(X_train))
+plt.figure(figsize=(12, 6))
+plt.subplot(121)
+plt.imshow(np.reshape(X_train[image_number], (227, 227, 3)), cmap='gray')
+plt.subplot(122)
+plt.imshow(np.reshape(y_train[image_number], (227, 227)), cmap='gray')
+plt.show()
+
+import numpy as np
+import os
+from PIL import Image
+import matplotlib.pyplot as plt
+from scipy.ndimage import convolve
+
+from sklearn.neural_network import BernoulliRBM
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
+from sklearn import metrics
+
+from skimage.transform import resize
+from skimage.io import imread_collection, imshow
+
+import keras
+from glob import glob
+from tqdm import tqdm
+import tensorflow as tf
+from numpy import zeros, random
+
+# Data
+from tensorflow.image import resize
+from keras.preprocessing.image import load_img, img_to_array
+
+# Data viz
+import matplotlib.pyplot as plt
+
+# Model
+from keras.models import Model, Sequential, load_model
+from keras.layers import Conv2D, Conv2DTranspose, concatenate, MaxPool2D, Dropout, BatchNormalization, Layer, Input, add, multiply, UpSampling2D
+
+# Model Viz
+from tensorflow.keras.utils import plot_model
+
+# Callback
+from keras.callbacks import Callback
+
+def load_image(path):
+    img = resize( img_to_array( load_img(path) )/255. , (256,256))
+    return img
+
+root_path = '/content/drive/MyDrive/Crack/'
+
+root_path = '/content/drive/MyDrive/Crack/img/'
+image_paths = sorted(glob(root_path + f"*.jpg"))
+mask_paths = []
+for path in image_paths:
+    mask_path = path.replace('Image','Mask')
+    mask_path = mask_path.replace('.jpg','.jpg')
+    mask_paths.append(mask_path)
+print(f"Total Number of Images  : {len(image_paths)}")
+
+images = zeros(shape=(len(image_paths), 256, 256, 3))
+masks = zeros(shape=(len(image_paths), 256, 256, 3))
+for n, (img_path, mask_path) in tqdm(enumerate(zip(image_paths, mask_paths)), desc="Loading"):
+    images[n] = load_image(img_path)
+    masks[n] = load_image(mask_path)
+
+
+
+class Encoder(Layer):
+
+    def __init__(self, filters, rate, pooling=True, **kwargs):
+        super(Encoder, self).__init__(**kwargs)
+
+        self.filters = filters
+        self.rate = rate
+        self.pooling = pooling
+
+        self.c1 = Conv2D(filters, kernel_size=3, strides=1, padding='same', kernel_initializer='he_normal', activation='relu')
+        self.drop = Dropout(rate)
+        self.c2 = Conv2D(filters, kernel_size=3, strides=1, padding='same', kernel_initializer='he_normal', activation='relu')
+        self.pool = MaxPool2D()
+
+    def call(self, X):
+        x = self.c2(self.drop(self.c1(X)))
+        if self.pooling:
+            y = self.pool(x)
+            return y, x
+        else:
+            return x
+
+    def get_config(self):
+        base_config = super().get_config()
+        return {
+            **base_config,
+            "filters":self.filters,
+            "rate":self.rate,
+            "pooling":self.pooling,
+        }
+
+class Decoder(Layer):
+
+    def __init__(self, filters, rate, **kwargs):
+        super(Decoder, self).__init__(**kwargs)
+
+        self.filters = filters
+        self.rate = rate
+
+        self.cT = Conv2DTranspose(filters, kernel_size=3, strides=2, padding='same', kernel_initializer='he_normal', activation='relu')
+        self.net = Encoder(filters, rate, pooling=False)
+
+    def call(self, X):
+        x, skip_x = X
+        x = self.cT(x)
+
+        c = concatenate([x, skip_x])
+        f = self.net(c)
+        return f
+
+    def get_config(self):
+        base_config = super().get_config()
+        return {
+            **base_config,
+            "filters":self.filters,
+            "rate":self.rate
+        }
+
+class AttentionGate(Layer):
+
+    def __init__(self, filters, **kwargs):
+        super(AttentionGate, self).__init__(**kwargs)
+
+        self.filters = filters
+
+        self.normal = Conv2D(filters, kernel_size=3, strides=1, padding='same', kernel_initializer='he_normal', activation='relu')
+        self.down = Conv2D(filters, kernel_size=3, strides=2, padding='same', kernel_initializer='he_normal', activation='relu')
+
+        self.learn = Conv2D(1, kernel_size=1, strides=1, activation='sigmoid')
+        self.resample = UpSampling2D()
+
+    def call(self, X):
+        x, skip_x = X
+
+        x = self.normal(x)
+        skip = self.down(skip_x)
+        a = add([x, skip])
+
+        l = self.learn(a)
+        l = self.resample(l)
+
+        f = multiply([l, skip_x])
+        return f
+
+    def get_config(self):
+        base_config = super().get_config()
+        return {
+            **base_config,
+            "filters":self.filters
+        }
+
+image_input = Input(shape=(256,256,3), name="InputImage")
+
+# Encoder Phase
+p1, c1 = Encoder(32, 0.1, name="EncoderBlock1")(image_input)
+p2, c2 = Encoder(64, 0.1, name="EncoderBlock2")(p1)
+p3, c3 = Encoder(128, 0.2, name="EncoderBlock3")(p2)
+p4, c4 = Encoder(256, 0.2, name="EncoderBlock4")(p3)
+
+# Latent Representation
+encoding = Encoder(512, 0.3, pooling=False, name="Encoding")(p4)
+
+# Deocder + Attention Phase
+a1 = AttentionGate(256, name="Attention1")([encoding, c4])
+d1 = Decoder(256, 0.2, name="DecoderBlock1")([encoding, a1])
+
+a2 = AttentionGate(128, name="Attention2")([d1, c3])
+d2 = Decoder(128, 0.2, name="DecoderBlock2")([d1, a2])
+
+a3 = AttentionGate(64, name="Attention3")([d2, c2])
+d3 = Decoder(64, 0.2, name="DecoderBlock3")([d2, a3])
+
+a4 = AttentionGate(32, name="Attention4")([d3, c1])
+d4 = Decoder(32, 0.1, name="DecoderBlock4")([d3, a4])
+
+# Output Layer
+mask_out = Conv2D(3, kernel_size=1, strides=1, activation='sigmoid', padding='same', name="MaskOut")(d4)
+
+# Model
+att_unet = Model(
+    inputs=[image_input], outputs=[mask_out], name="AttentionUNet"
+)
+
+# Compile
+att_unet.compile(
+    loss='binary_crossentropy',
+    optimizer='adam'
+)
+
+def show_image(image, alpha=1, title=None):
+    plt.imshow(image, alpha=alpha)
+    plt.title(title)
+    plt.axis('off')
+
+def show_mask(image, mask, alpha=0.6):
+    show_image(image)
+    show_image(mask, alpha=alpha)
+
+def get_random_data(data='train'):
+    if data=='train':
+        id = np.random.randint(len(train_images))
+        image = train_images[id]
+        mask = train_masks[id]
+        return image, mask
+    else:
+        id = np.random.randint(len(test_images))
+        image = test_images[id]
+        mask = test_masks[id]
+        return image, mask
+
+def show_predictions(model, n_images=5):
+    for i in range(n_images):
+        plt.figure(figsize=(10,8))
+
+        image, mask = get_random_data(data='test')
+        pred_mask = model.predict(image[np.newaxis,...])[0]
+
+        plt.subplot(1,3,1)
+        show_image(image, title='Original Image')
+
+        plt.subplot(1,3,2)
+        show_image(mask, title='Original Mask')
+
+        plt.subplot(1,3,3)
+        show_image(pred_mask, title='Predicted Mask')
+
+        plt.show()
+
+class ShowProgress(Callback):
+    def on_epoch_end(self, epoch, logs=None):
+        show_predictions(model=self.model, n_images=1)
+
+train_images, train_masks = images[:30], masks[:30]
+test_images, test_masks = images[30:], masks[30:]
+
+BATCH_SIZE = 16
+SPE = len(train_images)//BATCH_SIZE
+
+att_unet.fit(
+    train_images, train_masks,
+    epochs=10,
+    batch_size=BATCH_SIZE,
+    steps_per_epoch=SPE,
+    callbacks=[ModelCheckpoint("AttentionUNet.keras", save_best_only=True), ShowProgress()]
+)
+
+
+
+
+
+from keras_unet_collection.models import att_unet_2d
+
+model = att_unet_2d((256,256 ,3),
+                      filter_num=[64, 128, 256, 512, 1024],
+                      n_labels=1,
+                      stack_num_down=2,
+                      stack_num_up=2, activation='ReLU',
+                      atten_activation='ReLU'
+                      , attention='add',
+                      output_activation='Sigmoid',
+                      batch_norm=True,
+                      pool=False,
+                      unpool=False,
+                      backbone='VGG16',
+                      weights='imagenet',
+                      freeze_backbone=True,
+                      freeze_batch_norm=True,
+                      name='attunet'
+                      )
+
+from keras_unet_collection import losses
+metrics_set=[ tf.keras.metrics.BinaryIoU(target_class_ids=[1]), losses.dice_coef]
+
+model.compile(loss=tf.keras.losses.binary_crossentropy,
+              optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4),
+              metrics=metrics_set)
+
+IMG_HEIGHT = X_train.shape[1]
+IMG_WIDTH  = X_train.shape[2]
+IMG_CHANNELS = X_train.shape[3]
+input_shape = (IMG_HEIGHT,IMG_WIDTH,IMG_CHANNELS)
+num_labels = 1  #Binary
+batch_size = 3
+epochs = 50
+
+filepath = '/content/drive/mydrive/Leaf/attunet_model.keras'
+checkpoint = ModelCheckpoint(filepath=filepath,
+                             monitor="val_dice_coef",
+                             verbose=1,
+                             save_best_only=True,
+                             mode="max")
+
+earlyStopping = EarlyStopping(patience=5)
+
+callbacks = [checkpoint, earlyStopping]
+
+from keras_unet_collection.models import att_unet_2d
+
+model = att_unet_2d((256, 256, 3),
+                      filter_num=[64, 128, 256, 512, 1024],
+                      n_labels=1,
+                      stack_num_down=2,
+                      stack_num_up=2, activation='ReLU',
+                      atten_activation='ReLU'
+                      , attention='add',
+                      output_activation='Sigmoid',
+                      batch_norm=True,
+                      pool=False,
+                      unpool=False,
+                      backbone='VGG16',
+                      weights='imagenet',
+                      freeze_backbone=True,
+                      freeze_batch_norm=True,
+                      name='attunet'
+                      )
+
+model.compile(loss=tf.keras.losses.binary_crossentropy,
+              optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4),
+              metrics=metrics_set)
+
+X_train, X_test, y_train, y_test = train_test_split(images,masks, test_size = 0.20, random_state = 9)
+
+X_train.shape
+
+start = datetime.now()
+history = model.fit(X_train, y_train,
+                    verbose=1,
+                    batch_size = batch_size,
+                    validation_data=(X_test, y_test ),
+                    epochs=epochs,
+                    callbacks=callbacks)
+
+stop = datetime.now()
+
+
+
+
+
+
+
+
+
+
+
+
+
+def load_image(path):
+    img = resize( img_to_array( load_img(path) )/255. , (227,227))
+    return img
+
+root_path = '/content/drive/My Drive/Crack/'
+
+root_path = '/content/drive/My Drive/Crack/img/'
+image_paths = sorted(glob(root_path + f"*.jpg"))
+mask_paths = []
+for path in image_paths:
+    mask_path = path.replace('img','mask')
+    mask_path = mask_path.replace('.jpg','.jpg')
+    mask_paths.append(mask_path)
+print(f"Total Number of Images  : {len(image_paths)}")
+
+images = zeros(shape=(len(image_paths), 227,227, 3))
+masks = zeros(shape=(len(image_paths), 227,227, 3))
+for n, (img_path, mask_path) in tqdm(enumerate(zip(image_paths, mask_paths)), desc="Loading"):
+    images[n] = load_image(img_path)
+    masks[n] = load_image(mask_path)
+
+images = zeros(shape=(len(image_paths), 256, 256, 3))
+masks = zeros(shape=(len(image_paths), 256, 256, 3))
+for n, (img_path, mask_path) in tqdm(enumerate(zip(image_paths, mask_paths)), desc="Loading"):
+    images[n] = load_image(img_path)
+    masks[n] = load_image(mask_path)
+
+def show_image(image, title=None, alpha=1):
+    plt.imshow(image, alpha=alpha)
+    plt.title(title)
+    plt.axis('off')
+
+def show_mask(GRID, fig_size=(8,20), model=None, join=False, alpha=0.5):
+
+    # Config the GRID
+    n_rows, n_cols = GRID
+    n_images = n_rows * n_cols
+    n = 1
+    plt.figure(figsize=fig_size)
+    for i in range(1,n_images+1):
+
+        if model is None:
+
+            if join:
+
+                # Seect a Random Image and mask
+                id = random.randint(len(images))
+                image, mask = images[id], masks[id]
+
+                # plot the Mask over the Image
+                plt.subplot(n_rows, n_cols, i)
+                show_image(image)
+                show_image(mask, alpha=alpha)
+
+            else:
+
+                if i%2==0:
+                    plt.subplot(n_rows,n_cols,i)
+                    show_image(mask)
+
+                else:
+                    # Seect a Random Image and mask
+                    id = random.randint(len(images))
+                    image, mask = images[id], masks[id]
+
+                    # Plot Image
+                    plt.subplot(n_rows,n_cols,i)
+                    show_image(image)
+        else:
+            if join:
+
+                if i%2==0:
+                    # plot the Mask over the Image
+                    plt.subplot(n_rows, n_cols, i)
+                    show_image(image)
+                    show_image(pred_mask, alpha=alpha, title="Predicted Mask")
+                else:
+                    # Seect a Random Image and mask
+                    id = random.randint(len(images))
+                    image, mask = images[id], masks[id]
+                    pred_mask = model.predict(tf.expand_dims(image, axis=0))[0]
+
+                    # plot the Mask over the Image
+                    plt.subplot(n_rows, n_cols, i)
+                    show_image(image)
+                    show_image(mask, alpha=alpha, title="Original Mask")
+            else:
+                if n==1:
+                    # Seect a Random Image and mask
+                    id = random.randint(len(images))
+                    image, mask = images[id], masks[id]
+                    pred_mask = model.predict(tf.expand_dims(image, axis=0))[0]
+
+                    # plot the Mask over the Image
+                    plt.subplot(n_rows, n_cols, i)
+                    show_image(image, title="Original Image")
+                    n+=1
+
+                elif n==2:
+                    # plot the Mask over the Image
+                    plt.subplot(n_rows, n_cols, i)
+                    show_image(mask, title="Original Mask")
+                    n+=1
+                elif n==3:
+                    # plot the Mask over the Image
+                    plt.subplot(n_rows, n_cols, i)
+                    show_image(pred_mask, title="Predicted Mask")
+                    n=1
+    plt.show()
+
+GRID = [5,4]
+show_mask(GRID, fig_size=(15,20), join=False)
+
+GRID = [5,4]
+show_mask(GRID, fig_size=(15,20), join=True)
+
+GRID = [5,6]
+show_mask(GRID, fig_size=(15,20))
+
+GRID = [5,6]
+show_mask(GRID, fig_size=(15,20), join=True)
+
+class ShowProgress(Callback):
+    def on_epoch_end(self, epoch, logs=None):
+        show_mask(GRID=[1,1], model=self.model, join=False, fig_size=(20,8))
+        self.model.save("/content/drive/My Drive/Leaf/Image/AttentionUnet.h5")
+
+show_mask(GRID=[4,6], model=att_unet, join=False, fig_size=(20,30))
+
+
+
