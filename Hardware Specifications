@@ -1,0 +1,23 @@
+Hardware Requirements
+To reproduce the results or train the Gradient Transformer Self-Attention U-Net model efficiently, the following hardware setup is recommended:
+Minimum Requirements:
+CPU: Intel Core i5 (8th Gen) or AMD equivalent
+
+RAM: 16 GB
+
+GPU: NVIDIA GTX 1060 (6GB VRAM) or higher
+
+Storage: At least 20 GB free space (for dataset, model checkpoints, and logs)
+
+Recommended Setup (for training on large datasets or faster performance):
+CPU: Intel Core i7/i9 or AMD Ryzen 7/9
+
+RAM: 32 GB or more
+
+GPU: NVIDIA RTX 3080 / A100 / V100 with ≥10GB VRAM
+
+Storage: SSD with at least 50 GB free space
+
+CUDA: Version 11.3 or later
+
+Operating System: Ubuntu 20.04 / Windows 10 (64-bit)
