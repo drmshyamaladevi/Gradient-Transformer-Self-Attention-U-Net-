@@ -1,0 +1,19 @@
+Model checkpoints
+ Avoid Uploading Large Files Directly to GitHub
+GitHub has a file upload limit of 100 MB per file. If your .pth file is larger:
+
+Option A: Use GitHub Releases (Best)
+Go to your GitHub repo.
+
+Click on "Releases" > "Draft a new release".
+
+Attach your model files there.
+
+Add a tag and description.
+ Model Checkpoints
+Provide links to pre-trained model checkpoints (if available) or instructions on how to save and load trained models. This allows users to quickly test the model without having to train from scratch.
+
+
+Pre-trained model checkpoint: [Link to Model Checkpoints]
+To load a pre-trained model:
+model = load_model('./models/cracknet.h5')
